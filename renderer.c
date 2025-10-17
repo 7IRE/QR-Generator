@@ -1,14 +1,9 @@
 #include "renderer.h"
 #include <stdio.h>
-#define size 25
 
-int main(){
-    int data[25][25]={0};
-    data[0][0]=1,data[1][1]=1,data[2][2]=1,data[3][3]=1,data[4][4]=1,data[5][5]=1;
-    display(data,6,6);
-}
 //To print individual pixels at 2*1 size
 void block(int a,int b , int c){
+    a += 2, b += 2;
     int x,y;
     if(a==0){
         x=a;
@@ -22,11 +17,15 @@ void block(int a,int b , int c){
     else{
         y=2*b+1;
     }
-    if(c==0){
+    //1-BLACK , 2-WHITE
+    if(c==1){
         printf("\033[40m");
     }
-    else if(c==1){
+    else if(c==2){
         printf("\033[47m");
+    }
+    else if(c==0){
+        printf("\033[100m");
     }
     printf("\033[%d;%dH",x,y);
     printf("  \033[0m");
