@@ -31,7 +31,7 @@ void block(int a,int b , int c){
     printf("  \033[0m");
 }
 
-void display(int arr[size][size],int row,int column){
+void display(int QRsize,int arr[QRsize][QRsize],int row,int column){
     printf("\033[2J");
     for(int i=0;i<row;i++){
         for(int j=0;j<column;j++){

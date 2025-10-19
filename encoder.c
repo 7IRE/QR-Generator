@@ -1,12 +1,13 @@
 #include <stdio.h>
+
 #include "renderer.h"
 #include "encoder.h"
 
-#define stringinput 17
-void fixptr(int QRdata[size][size],int b){
+
+void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b){
     //Timing pattern
     int a=1;
-    for(int i=0;i<size-4;i++){
+    for(int i=0;i<QRsize-4;i++){
         QRdata[i+2][b]=a;
         QRdata[b][i+2]=a;
         if(a==1){
@@ -18,7 +19,7 @@ void fixptr(int QRdata[size][size],int b){
     }   
 }
 
-void findptr(int QRdata[size][size],int x,int y){
+void findptr(int QRsize , int QRdata[QRsize][QRsize],int x,int y){
     for(int i=0;i<9;i++){
         QRdata[x+i][y]=2;
         QRdata[x+i][y+8]=2;
@@ -46,15 +47,22 @@ void findptr(int QRdata[size][size],int x,int y){
     QRdata[x+4][y+4]=1;
 }
 
-void initalize(){
-    char QRchar[stringinput];
-    scanf("%s",&QRchar);
-    int QRdata[size][size]={0};
-    QRinit(QRchar,QRdata);
+void initalize(int version , int strsize , int corlvl , int QRsize){
+    char QRchar[strsize+1];
+    printf("Enter Data To Encode:");
+    scanf("  %[^\n]%*c",QRchar);
+    
+    int QRdata[QRsize][QRsize];
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
+            QRdata[i][j]=0;
+        }
+    }
+    QRinit(QRsize,strsize,QRchar,QRdata,version);
 }
 
 
-void tempformatbit(int QRdata[size][size]){
+void tempformatbit(int QRsize ,int QRdata[QRsize][QRsize]){
         for(int i=0;i<9;i++){
             if(QRdata[10][2+i]==0){
                 QRdata[10][2+i]=2;
@@ -62,32 +70,403 @@ void tempformatbit(int QRdata[size][size]){
             if(QRdata[2+i][10]==0){
                 QRdata[2+i][10]=2;
             }
-            if(QRdata[10][size-10+i]==0){
-                QRdata[10][size-10+i]=2;
+            if(QRdata[10][QRsize-10+i]==0){
+                QRdata[10][QRsize-10+i]=2;
             }
             if(QRdata[2+i][10]==0){
                 QRdata[2+i][10]=2;
             }
-            if(QRdata[size-10+i][10]==0){
-                QRdata[size-10+i][10]=2;
+            if(QRdata[QRsize-10+i][10]==0){
+                QRdata[QRsize-10+i][10]=2;
             }
-            QRdata[size-10][10]=1;
+            QRdata[QRsize-10][10]=1;
         }
 }
-void border(int QRdata[size][size]){
-    for(int i=0;i<size;i++){
-        QRdata[size-1][i]=2;
-        QRdata[size-2][i]=2;
-        QRdata[i][size-1]=2;
-        QRdata[i][size-2]=2;
+void border(int QRsize , int QRdata[QRsize][QRsize]){
+    for(int i=0;i<QRsize;i++){
+        QRdata[QRsize-1][i]=2;
+        QRdata[QRsize-2][i]=2;
+        QRdata[i][QRsize-1]=2;
+        QRdata[i][QRsize-2]=2;
         QRdata[0][i]=2;
         QRdata[1][i]=2;
         QRdata[i][0]=2;
         QRdata[i][1]=2;
     }
 }
+void genalignmark(int version , int QRsize,int QRdata[QRsize][QRsize]){
+    if(version==1){
+    }
+    else if(version==2){
+        int arr[]={6,18};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==3){
+        int arr[]={6,22};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==4){
+        int arr[]={6,26};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==5){
+        int arr[]={6,30};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==6){
+        int arr[]={6,34};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==7){
+        int arr[]={6,22,38};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==8){
+        int arr[]={6,24,42};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==9){
+        int arr[]={6,26,46};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==10){
+        int arr[]={6,28,50};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==11){
+        int arr[]={6,30,54};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==12){
+        int arr[]={6,32,58};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==13){
+        int arr[]={6,34,62};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==14){
+        int arr[]={6,26,46,66};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==15){
+        int arr[]={	6,26,48,70};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==16){
+        int arr[]={6,26,50,74};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==17){
+        int arr[]={6,30,54,78};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==18){
+        int arr[]={6,30,56,82};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==19){
+        int arr[]={6,30,56,86};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==20){
+        int arr[]={6,34,62,90};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==21){
+        int arr[]={6,28,50,72,94};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==22){
+        int arr[]={6,26,50,74,98};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==23){
+        int arr[]={6,30,54,78,102};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==24){
+        int arr[]={6,28,54,80,106};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==25){
+        int arr[]={6,32,58,84,110};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==26){
+        int arr[]={6,30,58,86,114};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==27){
+        int arr[]={6,34,62,90,118};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==28){
+        int arr[]={6,26,50,74,98,122};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==29){
+        int arr[]={6,30,54,78,102,126};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==30){
+        int arr[]={6,26,52,78,104,130};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+    else if(version==31){
+        int arr[]={	6,30,56,82,108,134};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==32){
+        int arr[]={	6,30,56,82,108,134};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==33){
+        int arr[]={6,30,58,86,114,142};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==34){
+        int arr[]={6,34,62,90,118,146};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==35){
+        int arr[]={6,30,54,78,102,126,150};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==36){
+        int arr[]={6,24,50,76,102,128,154};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==37){
+        int arr[]={6,28,54,80,106,132,158};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==38){
+        int arr[]={6,32,58,84,110,136,162};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==39){
+        int arr[]={6,26,54,82,110,138,166};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
+        else if(version==40){
+        int arr[]={6,30,58,86,114,142,170};
+        int s=sizeof(arr)/sizeof(arr[0]);
+        for(int i=0;i<s;i++){
+            for(int j=0;j<s;j++){
+                alignment(QRsize,QRdata,arr[i],arr[j]);
+            }
+        }
+    }
 
-void alignment(int QRdata[size][size],int x,int y){
+}
+void alignment(int QRsize ,int QRdata[QRsize][QRsize],int x,int y){
+    
+    for(int i=0;i<5;i++){
+       if( QRdata[i+x][y]!=0||QRdata[x][y+i]!=0||QRdata[i+x][y+4]!=0||QRdata[x+4][y+i]!=0){
+        return;
+       }
+    }
+    for(int i=0;i<3;i++){
+        if( QRdata[i+x+1][y+1]!=0||QRdata[x+1][y+1+i]!=0||QRdata[i+1+x][y+1+2]!=0||QRdata[x+1+2][y+1+i]!=0){
+            return;
+        }
+    }
+    if(QRdata[x+2][y+2]!=0){
+        return;
+    }
+
+
     for(int i=0;i<5;i++){
         QRdata[i+x][y]=1;
         QRdata[x][y+i]=1;
@@ -103,14 +482,14 @@ void alignment(int QRdata[size][size],int x,int y){
     QRdata[x+2][y+2]=1;
 }
 
-void writedata(int QRdata[size][size],int bit1){
+void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1){
     if(bit1==0){
         bit1=2;
     }
     if(bit1==1){
         bit1=1;
     }
-    int pos[2]={size-3,size-3};
+    int pos[2]={QRsize-3,QRsize-3};
     int dir = 1;
     // 1-UP , 2-DOWN
     while(1){
@@ -142,31 +521,57 @@ void writedata(int QRdata[size][size],int bit1){
         }
     }
     //Change direction
-    if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
-        for(int i=1 ; i<size ; i += 2){
-            if(pos[1]==size-i){
-                dir=2;
-                pos[1] -= 1;
-            }
-        }    
+    if(pos[1]==9){
+        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
+            dir=2;
+            pos[1] -=2;
+        }
     }
-    else if(dir==2&&pos[0]==size-3&&QRdata[pos[0]][pos[1]!=0]){
-        for(int i=1 ; i<size ; i+=2){
-            if(pos[1]==size-i){
-                dir=1;
-                pos[1] -= 1;
+    else if(pos[1]<9){
+        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
+            for(int i=0 ; i<QRsize ; i += 2){
+                if(pos[1]==QRsize-i){
+                    dir=2;
+                    pos[1] -= 1;
+                }
+            }    
+        }
+        else if(dir==2&&pos[0]==QRsize-3&&QRdata[pos[0]][pos[1]!=0]){
+            for(int i=1 ; i<QRsize ; i+=2){
+                if(pos[1]==QRsize-i){
+                    dir=1;
+                    pos[1] -= 1;
+                }
+            }
+        }
+    }
+    else{
+        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
+            for(int i=1 ; i<QRsize ; i += 2){
+                if(pos[1]==QRsize-i){
+                    dir=2;
+                    pos[1] -= 1;
+                }
+            }    
+        }
+        else if(dir==2&&pos[0]==QRsize-3&&QRdata[pos[0]][pos[1]!=0]){
+            for(int i=1 ; i<QRsize ; i+=2){
+                if(pos[1]==QRsize-i){
+                    dir=1;
+                    pos[1] -= 1;
+                }
             }
         }
     }
 }
 
 
-void dataconverter(int QRdata[size][size],char QRchar[stringinput]){
+void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput]){
     //byte mode
-    writedata(QRdata,0);
-    writedata(QRdata,1);
-    writedata(QRdata,0);
-    writedata(QRdata,0);
+    writedata(QRsize,QRdata,0);
+    writedata(QRsize,QRdata,1);
+    writedata(QRsize,QRdata,0);
+    writedata(QRsize,QRdata,0);
     int a,b;
     // for(int i=0;i<stringinput;i++){
     //     a=QRchar[i],b=0;
@@ -176,26 +581,27 @@ void dataconverter(int QRdata[size][size],char QRchar[stringinput]){
     // }
 }
 
-void QRinit(char QRchar[stringinput],int QRdata[size][size]){
-    fixptr(QRdata,8);
-    findptr(QRdata,1,1);
-    findptr(QRdata,size-10,1);
-    findptr(QRdata,1,size-10);
-    tempformatbit(QRdata);
-    border(QRdata);
-    int QRmask[size][size]={0};
-    for(int i=0;i<size;i++){
-        for(int j=0;j<size;j++){
+void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version){
+    fixptr(QRsize,QRdata,8);
+    findptr(QRsize,QRdata,1,1);
+    findptr(QRsize,QRdata,QRsize-10,1);
+    findptr(QRsize,QRdata,1,QRsize-10);
+    tempformatbit(QRsize,QRdata);
+    border(QRsize,QRdata);
+    genalignmark(version,QRsize,QRdata);
+    int QRmask[QRsize][QRsize];
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
+            QRmask[i][j]=0;
+        }
+    }
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
             if(QRdata[i][j]==0){
                 QRmask[i][j]==1;
             }
         }
     }
-    dataconverter(QRdata,QRchar);
-    display(QRdata,size,size);
-}
-
-int main(){
-    initalize();
-    return 0;
+    dataconverter(QRsize,stringinput,QRdata,QRchar);
+    display(QRsize,QRdata,QRsize,QRsize);
 }

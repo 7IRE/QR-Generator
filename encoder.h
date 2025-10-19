@@ -1,12 +1,14 @@
 #ifndef ENCODER_H
 #define ENCODER_H
-#define size 25
-#define stringinput 17
-void initalize();
-void QRinit(char QRchar[stringinput],int QRdata[size][size]);
-void fixptr(int QRdata[size][size],int b);
-void findptr(int QRdata[size][size],int x,int y);
-void tempformatbit(int QRdata[size][size]);
-void dataconverter(int QRdata[size][size],char QRchar[stringinput]);
-void writedata(int QRdata[size][size],int bit1);
+
+void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b);
+void findptr(int QRsize , int QRdata[QRsize][QRsize],int x,int y);
+void initalize(int version , int strsize , int corlvl , int QRsize);
+void tempformatbit(int QRsize ,int QRdata[QRsize][QRsize]);
+void border(int QRsize , int QRdata[QRsize][QRsize]);
+void alignment(int QRsize ,int QRdata[QRsize][QRsize],int x,int y);
+void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1);
+void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput]);
+void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version);
+void genalignmark(int version , int QRsize,int QRdata[QRsize][QRsize]);
 #endif
