@@ -50,7 +50,13 @@ void findptr(int QRsize , int QRdata[QRsize][QRsize],int x,int y){
 void initalize(int version , int strsize , int corlvl , int QRsize){
     char QRchar[strsize+1];
     printf("Enter Data To Encode:");
-    scanf("  %[^\n]%*c",QRchar);
+    while(getchar()=='\n');
+    char cbuf;
+    int i=0;
+    while((cbuf = getchar())!='\n'){
+        QRchar[i++]=cbuf;
+    }
+    QRchar[i]='\0';
     
     int QRdata[QRsize][QRsize];
     for(int i=0;i<QRsize;i++){
@@ -58,11 +64,11 @@ void initalize(int version , int strsize , int corlvl , int QRsize){
             QRdata[i][j]=0;
         }
     }
-    QRinit(QRsize,strsize,QRchar,QRdata,version);
+    QRinit(QRsize,strsize,QRchar,QRdata,version,i);
 }
 
 
-void tempformatbit(int QRsize ,int QRdata[QRsize][QRsize]){
+void tempformatbit(int QRsize ,int QRdata[QRsize][QRsize],int version){
         for(int i=0;i<9;i++){
             if(QRdata[10][2+i]==0){
                 QRdata[10][2+i]=2;
@@ -80,6 +86,16 @@ void tempformatbit(int QRsize ,int QRdata[QRsize][QRsize]){
                 QRdata[QRsize-10+i][10]=2;
             }
             QRdata[QRsize-10][10]=1;
+        }
+        if(version>6){
+            for(int i=0;i<6;i++){
+                QRdata[QRsize-11][2+i]=2;
+                QRdata[QRsize-12][2+i]=2;
+                QRdata[QRsize-13][2+i]=2;
+                QRdata[2+i][QRsize-11]=2;
+                QRdata[2+i][QRsize-12]=2;
+                QRdata[2+i][QRsize-13]=2;
+            }
         }
 }
 void border(int QRsize , int QRdata[QRsize][QRsize]){
@@ -489,24 +505,13 @@ void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1){
     if(bit1==1){
         bit1=1;
     }
-    int pos[2]={QRsize-3,QRsize-3};
+    int pos[2]={QRsize-2,QRsize-4};
     int dir = 1;
-    // 1-UP , 2-DOWN
+    // 1-UP , 2-DOWN.
     while(1){
         if(dir==1){
-            if(QRdata[pos[0]][pos[1]]==0){
-                QRdata[pos[0]][pos[1]]=bit1;
-                break;
-            }
-            pos[1] -= 1;
-            if(QRdata[pos[0]][pos[1]]==0){
-                QRdata[pos[0]][pos[1]]=bit1;
-                break;
-            }
             pos[1] += 1;
             pos[0] -= 1;
-        }
-        else if(dir == 2){
             if(QRdata[pos[0]][pos[1]]==0){
                 QRdata[pos[0]][pos[1]]=bit1;
                 break;
@@ -516,77 +521,117 @@ void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1){
                 QRdata[pos[0]][pos[1]]=bit1;
                 break;
             }
+            
+        }
+        else if(dir == 2){
             pos[1] += 1;
             pos[0] += 1;
+            if(QRdata[pos[0]][pos[1]]==0){
+                QRdata[pos[0]][pos[1]]=bit1;
+                break;
+            }
+            pos[1] -= 1;
+            if(QRdata[pos[0]][pos[1]]==0){
+                QRdata[pos[0]][pos[1]]=bit1;
+                break;
+            }
+            
         }
-    }
-    //Change direction
-    if(pos[1]==9){
-        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
-            dir=2;
-            pos[1] -=2;
-        }
-    }
-    else if(pos[1]<9){
-        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
-            for(int i=0 ; i<QRsize ; i += 2){
-                if(pos[1]==QRsize-i){
-                    dir=2;
-                    pos[1] -= 1;
-                }
-            }    
-        }
-        else if(dir==2&&pos[0]==QRsize-3&&QRdata[pos[0]][pos[1]!=0]){
-            for(int i=1 ; i<QRsize ; i+=2){
-                if(pos[1]==QRsize-i){
-                    dir=1;
-                    pos[1] -= 1;
-                }
+        //Change direction
+        if(pos[1]==9){
+            if(dir==1&&pos[0]==0){
+                dir=2;
+                pos[1] -=3;
             }
         }
+        else{
+            if(dir==1&&pos[0]==0){
+                dir=2;
+                pos[1] -= 2;
+            }   
+            else if(dir==2&&pos[0]==QRsize){
+                dir=1;
+                pos[1] -= 2;        
+            }
+        }
+    }
+}
+
+
+void binaryconverter(int size,int arr[size],int data){
+    for(int i=0;i<size;i++){
+        arr[i]=0;
+    }
+    int m=size-1;    
+    while(data>0){
+        arr[m]=data%2;
+        data /= 2;
+        m--;
+    }
+}
+void datawriter(int sizebyte ,int sizefull ,int bitdata[sizefull],int data[sizebyte]){
+    int m=0;
+    for(int i=0;i<sizefull;i++){
+        if(bitdata[i]==2){
+            bitdata[i]=data[m];
+            m++;
+        }
+        if(m==sizebyte-1){
+            break;
+        }
+    }
+
+}
+
+void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput],int i,int version){
+    //byte mode
+    i--;
+    int bitcount=0;
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
+            if(QRdata[i][j]==0){
+                bitcount++;
+            }
+        }
+    }
+    int bitdata[bitcount];
+    for(int i=0;i<bitcount;i++){
+        bitdata[i]=2;
+    }
+    bitdata[0]=0,bitdata[1]=1,bitdata[2]=0,bitdata[3]=0;
+    if(version<10){
+        int data[8];
+        binaryconverter(8,data,i);
+        datawriter(8,bitcount,bitdata,data);
     }
     else{
-        if(dir==1&&pos[0]==2&&QRdata[pos[0]][pos[1]]!=0){
-            for(int i=1 ; i<QRsize ; i += 2){
-                if(pos[1]==QRsize-i){
-                    dir=2;
-                    pos[1] -= 1;
-                }
-            }    
+        int data[16];
+        binaryconverter(16,data,i);
+        datawriter(16,bitcount,bitdata,data);
+    }
+    int data[8];
+    for(int i=0;i<stringinput;i++){
+        binaryconverter(8,data,QRchar[i]);
+        datawriter(8,bitcount,bitdata,data);
+    }
+
+    for(int i=0;i<bitcount;i++){
+        if(QRchar[i]==2){
+            QRchar[i]=0;
         }
-        else if(dir==2&&pos[0]==QRsize-3&&QRdata[pos[0]][pos[1]!=0]){
-            for(int i=1 ; i<QRsize ; i+=2){
-                if(pos[1]==QRsize-i){
-                    dir=1;
-                    pos[1] -= 1;
-                }
-            }
-        }
+    }
+
+    for(int i=0;i<bitcount;i++){
+        writedata(QRsize,QRdata,bitdata[i]);
     }
 }
 
-
-void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput]){
-    //byte mode
-    writedata(QRsize,QRdata,0);
-    writedata(QRsize,QRdata,1);
-    writedata(QRsize,QRdata,0);
-    writedata(QRsize,QRdata,0);
-    int a,b;
-    // for(int i=0;i<stringinput;i++){
-    //     a=QRchar[i],b=0;
-    //     while(a!=0){
-            
-    //     }
-    // }
-}
-
-void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version){
+void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version,int i){
     fixptr(QRsize,QRdata,8);
     findptr(QRsize,QRdata,1,1);
     findptr(QRsize,QRdata,QRsize-10,1);
     findptr(QRsize,QRdata,1,QRsize-10);
-    tempformatbit(QRsize,QRdata);
+    tempformatbit(QRsize,QRdata,version);
     border(QRsize,QRdata);
     genalignmark(version,QRsize,QRdata);
     int QRmask[QRsize][QRsize];
@@ -602,6 +647,7 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
             }
         }
     }
-    dataconverter(QRsize,stringinput,QRdata,QRchar);
+    dataconverter(QRsize,stringinput,QRdata,QRchar,i,version);
     display(QRsize,QRdata,QRsize,QRsize);
+    printf("\n\n");
 }
