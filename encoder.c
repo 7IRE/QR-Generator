@@ -2,6 +2,8 @@
 
 #include "renderer.h"
 #include "encoder.h"
+#include <unistd.h>
+
 
 
 void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b){
@@ -502,8 +504,11 @@ void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1){
     if(bit1==0){
         bit1=2;
     }
-    if(bit1==1){
+    else if(bit1==1){
         bit1=1;
+    }
+    else if(bit1==2){
+        return;
     }
     int pos[2]={QRsize-2,QRsize-4};
     int dir = 1;
@@ -576,7 +581,7 @@ void datawriter(int sizebyte ,int sizefull ,int bitdata[sizefull],int data[sizeb
             bitdata[i]=data[m];
             m++;
         }
-        if(m==sizebyte-1){
+        if(m==sizebyte){
             break;
         }
     }
@@ -609,17 +614,43 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
         binaryconverter(16,data,i);
         datawriter(16,bitcount,bitdata,data);
     }
+    int z=0;
+    while(1){
+        if(QRchar[z]=='\0'){
+            break;
+        }
+        z++;
+    }
     int data[8];
-    for(int i=0;i<stringinput;i++){
+    for(int i=0;i<z;i++){
         binaryconverter(8,data,QRchar[i]);
         datawriter(8,bitcount,bitdata,data);
     }
-
-    for(int i=0;i<bitcount;i++){
-        if(QRchar[i]==2){
-            QRchar[i]=0;
+    int dat[4]={0};
+    datawriter(4,bitcount,bitdata,dat);
+    int Z=0;
+    while(1){
+        if(bitdata[Z]==2){
+            break;
+        }
+        Z++;
+    }
+    Z=Z/8;
+    Z=stringinput-Z;
+    //Z holds no. of remaining bits
+    //11101100 00010001
+    int databit1[8]={1,1,1,0,1,1,0,0};
+    int databit2[8]={0,0,0,1,0,0,0,1};
+    for(int i=0;i<Z;i++){
+        if(i%2==0){
+            datawriter(8,bitcount,bitdata,databit1);
+        }
+        else{
+            datawriter(8,bitcount,bitdata,databit2);
         }
     }
+
+
 
     for(int i=0;i<bitcount;i++){
         writedata(QRsize,QRdata,bitdata[i]);
