@@ -24,31 +24,29 @@ int correctionlevel(){
             }
 
     if(pos==0){
-        printf("\033[6m");
+        printf("\033[96m");
     }
-    printf("\033[91;1m");
     printf("\033[2;10HLOW           \033[2m\033[3;10HUp to 7 Percent\033[4;10Hdamage recovery");
-    printf("\033[0m"); 
+    printf("\033[91;1m");
     if(pos==1){
-        printf("\033[6m");
+        printf("\033[96m");
     }
-    printf("\033[91;1m");
     printf("\033[2;30HMEDIUM        \033[2m\033[3;30HUp to 15 Percent\033[4;30Hdamage recovery ");
-    printf("\033[0m"); 
+    printf("\033[91;1m");
     if(pos==2){
-        printf("\033[6m");
+        printf("\033[96m");
     }
-    printf("\033[91;1m");
     printf("\033[2;50HQUARTILE      \033[2m\033[3;50HUp to 25 Percent\033[4;50Hdamage recovery ");
-    printf("\033[0m"); 
-    if(pos==3){
-        printf("\033[6m");
-    }
     printf("\033[91;1m");
-    printf("\033[2;70HHIGH          \033[2m\033[3;70HUp to 30 Percent\033[4;70Hdamage recovery ");
-    printf("\033[0m");     
+     
+    if(pos==3){
+        printf("\033[96m");
     }
-
+    printf("\033[2;70HHIGH          \033[2m\033[3;70HUp to 30 Percent\033[4;70Hdamage recovery ");
+    printf("\033[91;1m");
+         
+    }
+    printf("\033[0m");
     return pos;
 }
 

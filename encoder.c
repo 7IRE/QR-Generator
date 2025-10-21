@@ -3,8 +3,178 @@
 #include "renderer.h"
 #include "encoder.h"
 #include <unistd.h>
+#include <conio.h>
 
-
+void mask(int QRsize,int Maskdata[QRsize][QRsize],int QRdata[QRsize][QRsize]){
+    printf("\033[2J");
+    printf("\n\033[0;0HPLEASE SELECT A MASK (a/d - LEFT & RIGHT , e - SELECT):\n");
+    char i='s';
+    int maskno=0; 
+    while(i!='e'){
+        if(maskno==0){
+            printf("\033[2;10H\033[40m  \033[47m  \033[40m  \033[47m  \033[3;10H\033[47m  \033[40m  \033[47m  \033[40m  \033[4;10H\033[40m  \033[47m  \033[40m  \033[47m  \033[5;10H\033[47m  \033[40m  \033[47m  \033[40m  ");
+        }
+        else if(maskno==1){
+            printf("\033[2;10H\033[40m        \033[3;10H\033[47m        \033[4;10H\033[40m        \033[5;10H\033[47m        ");
+        }
+        else if(maskno==2){
+            printf("\033[2;10H\033[40m  \033[47m    \033[40m  \033[3;10H\033[40m  \033[47m    \033[40m  \033[4;10H\033[40m  \033[47m    \033[40m  \033[5;10H\033[40m  \033[47m    \033[40m  ");
+        }
+        else if(maskno==3){
+            printf("\033[2;10H\033[40m  \033[47m    \033[40m  \033[3;10H\033[47m    \033[40m  \033[47m  \033[4;10H\033[47m  \033[40m  \033[47m    \033[5;10H\033[40m  \033[47m    \033[40m  ");
+        }
+        else if(maskno==5){
+            printf("\033[2;10H\033[40m        \033[3;10H\033[40m  \033[47m      \033[4;10H\033[40m  \033[47m    \033[40m  \033[5;10H\033[40m  \033[47m  \033[40m  \033[47m  ");
+        }
+        else if(maskno==4){
+            printf("\033[2;10H\033[40m      \033[47m  \033[3;10H\033[40m      \033[47m  \033[4;10H\033[47m      \033[40m  \033[5;10H\033[47m      \033[40m  ");
+        }
+        else if(maskno==6){
+            printf("\033[2;10H\033[40m        \033[3;10H\033[40m      \033[47m  \033[4;10H\033[40m    \033[47m  \033[40m  \033[5;10H\033[40m  \033[47m  \033[40m  \033[47m  ");
+        }
+        else if(maskno==7){
+            printf("\033[2;10H\033[40m  \033[47m  \033[40m  \033[47m  \033[3;10H\033[47m      \033[40m  \033[4;10H\033[40m  \033[47m      \033[5;10H\033[47m  \033[40m  \033[47m  \033[40m  ");
+        }
+        printf("\033[0m");
+        i=getch();
+        if(i=='a'){
+            maskno--;
+        }
+        else if(i=='d'){
+            maskno++;
+        }
+        if(maskno<0){
+            maskno=7;
+        }
+        else if(maskno>7){
+            maskno=0;
+        }
+    }
+    if(maskno==0){
+        for(int i=0;i<QRsize;i++){
+            for(int j=0;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if((i+j)%2==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==1){
+        for(int i=0;i<QRsize;i++){
+            for(int j=0;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if(i%2==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==2){
+        for(int i=0;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if((j-2)%3==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==3){
+        for(int i=2;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if((i+j-4)%3==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==4){
+        for(int i=2;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if(((i-2)/2+(j-2)/3)%2==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==5){
+        for(int i=2;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if(((i-2)*(j-2))%2+((i-2)*(j-2))%3==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==6){
+        for(int i=2;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if((((i-2)*(j-2))%3+((i-2)*(j-2)))%2==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    else if(maskno==7){
+        for(int i=2;i<QRsize;i++){
+            for(int j=2;j<QRsize;j++){
+                if(Maskdata[i][j]==1){
+                    if((((i-2)*(j-2))%3+i+j-4)%2==0){
+                        Maskdata[i][j]=1;
+                    }
+                    else{
+                        Maskdata[i][j]=0;
+                    }
+                }
+            }
+        }
+    }
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
+            if(Maskdata[i][j]==1){
+                if(QRdata==1){
+                    QRdata[i][j]=2;
+                }
+                else if(QRdata==2){
+                    QRdata[i][j]=1;
+                }
+            }
+        }
+    }
+}
 
 void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b){
     //Timing pattern
@@ -51,6 +221,9 @@ void findptr(int QRsize , int QRdata[QRsize][QRsize],int x,int y){
 
 void initalize(int version , int strsize , int corlvl , int QRsize){
     char QRchar[strsize+1];
+    for(int i=0;i<=strsize;i++){
+        QRchar[i]=' ';
+    }
     printf("Enter Data To Encode:");
     while(getchar()=='\n');
     char cbuf;
@@ -550,11 +723,11 @@ void writedata(int QRsize ,int QRdata[QRsize][QRsize],int bit1){
             }
         }
         else{
-            if(dir==1&&pos[0]==0){
+            if(dir==1&&pos[0]==1){
                 dir=2;
                 pos[1] -= 2;
             }   
-            else if(dir==2&&pos[0]==QRsize){
+            else if(dir==2&&pos[0]==QRsize-1){
                 dir=1;
                 pos[1] -= 2;        
             }
@@ -588,9 +761,8 @@ void datawriter(int sizebyte ,int sizefull ,int bitdata[sizefull],int data[sizeb
 
 }
 
-void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput],int i,int version){
+void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char QRchar[stringinput],int version){
     //byte mode
-    i--;
     int bitcount=0;
     for(int i=0;i<QRsize;i++){
         for(int j=0;j<QRsize;j++){
@@ -603,6 +775,15 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
     for(int i=0;i<bitcount;i++){
         bitdata[i]=2;
     }
+
+    int i=0;
+    while(1){
+        if(QRchar[i]=='\0'){
+            break;
+        }
+        i++;
+    }
+
     bitdata[0]=0,bitdata[1]=1,bitdata[2]=0,bitdata[3]=0;
     if(version<10){
         int data[8];
@@ -628,28 +809,23 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
     }
     int dat[4]={0};
     datawriter(4,bitcount,bitdata,dat);
-    int Z=0;
-    while(1){
-        if(bitdata[Z]==2){
-            break;
-        }
-        Z++;
-    }
-    Z=Z/8;
-    Z=stringinput-Z;
+    
+    int Z=stringinput-z;
     //Z holds no. of remaining bits
     //11101100 00010001
-    int databit1[8]={1,1,1,0,1,1,0,0};
-    int databit2[8]={0,0,0,1,0,0,0,1};
+    
+    
     for(int i=0;i<Z;i++){
         if(i%2==0){
+            int databit1[8]={1,1,1,0,1,1,0,0};
             datawriter(8,bitcount,bitdata,databit1);
         }
         else{
+            int databit2[8]={0,0,0,1,0,0,0,1};
             datawriter(8,bitcount,bitdata,databit2);
         }
     }
-
+   
 
 
     for(int i=0;i<bitcount;i++){
@@ -668,17 +844,21 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
     int QRmask[QRsize][QRsize];
     for(int i=0;i<QRsize;i++){
         for(int j=0;j<QRsize;j++){
-            QRmask[i][j]=0;
+            // QRmask[i][j]=0;
+            QRmask[i][j]=1;
         }
     }
     for(int i=0;i<QRsize;i++){
         for(int j=0;j<QRsize;j++){
             if(QRdata[i][j]==0){
-                QRmask[i][j]==1;
+                QRmask[i][j]=1;
             }
         }
     }
-    dataconverter(QRsize,stringinput,QRdata,QRchar,i,version);
+    dataconverter(QRsize,stringinput,QRdata,QRchar,version);
+    mask(QRsize,QRmask,QRdata);
+    //FORMAT INFO
     display(QRsize,QRdata,QRsize,QRsize);
     printf("\n\n");
 }
+

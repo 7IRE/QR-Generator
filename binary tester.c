@@ -30,7 +30,7 @@ void datawriter(int sizebyte ,int sizefull ,int bitdata[sizefull],int data[sizeb
 
 int main(){
     int i[10],m[8];
-    binaryconverter(8,m,161);
+    binaryconverter(8,m,8);
     for(int m=0;m<10;m++){
         i[m]=2;
     }
@@ -44,5 +44,24 @@ int main(){
     for(int n=0;n<8;n++){
         printf("%d",m[n]);
     }
+    int QRchar[17];
+    for(int i=0;i<=16;i++){
+        QRchar[i]='-';
+    }
+    // printf("Enter Data To Encode:");
+    // while(getchar()=='\n');
+    // char cbuf;
+    // int i=0;
+    // while((cbuf = getchar())!='\n'){
+    //     QRchar[i++]=cbuf;
+    // }
+    // QRchar[i]='\0';
+    
+    // for(int i=0;i<17;i++){
+    //     printf("%c",QRchar[i]);
+    // }
+    // printf("%d",i);
+    
+
     return 0;
 }
