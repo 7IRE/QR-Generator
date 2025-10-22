@@ -5,7 +5,34 @@
 #include <unistd.h>
 #include <conio.h>
 
-void mask(int QRsize,int Maskdata[QRsize][QRsize],int QRdata[QRsize][QRsize]){
+void errorcorrection(int IPsize, char Input[IPsize],int ECsize , char EC[ECsize]){
+    int eqn,x,temp,eqnt;
+    int maineq=1;
+    for(int i=0;i<ECsize;i++){
+        x=IPsize+i;
+        maineq=1;
+        for(int count=0;count<IPsize;count++){
+            eqn=1,eqnt=1;
+            for(int i=0;i<IPsize;i++){
+                if(count!=i){
+                    eqn *= (x-(int)Input[i]);
+                }
+                else{
+                    temp=i;
+                }
+            }
+            for(int i=0;i<IPsize;i++){
+                if(temp!=i){
+                    eqnt=temp-(int)Input[i];
+                }
+            }
+            eqn /= eqnt;
+            maineq *= Input[count]*eqn;
+        }
+        EC[i]=maineq%131;
+    }
+}
+int mask(int QRsize,int Maskdata[QRsize][QRsize],int QRdata[QRsize][QRsize]){
     printf("\033[2J");
     printf("\n\033[0;0HPLEASE SELECT A MASK (a/d - LEFT & RIGHT , e - SELECT):\n");
     char i='s';
@@ -165,15 +192,16 @@ void mask(int QRsize,int Maskdata[QRsize][QRsize],int QRdata[QRsize][QRsize]){
     for(int i=0;i<QRsize;i++){
         for(int j=0;j<QRsize;j++){
             if(Maskdata[i][j]==1){
-                if(QRdata==1){
+                if(QRdata[i][j]==1){
                     QRdata[i][j]=2;
                 }
-                else if(QRdata==2){
+                else if(QRdata[i][j]==2){
                     QRdata[i][j]=1;
                 }
             }
         }
     }
+    return maskno;
 }
 
 void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b){
@@ -239,7 +267,7 @@ void initalize(int version , int strsize , int corlvl , int QRsize){
             QRdata[i][j]=0;
         }
     }
-    QRinit(QRsize,strsize,QRchar,QRdata,version,i);
+    QRinit(QRsize,strsize,QRchar,QRdata,version,corlvl);
 }
 
 
@@ -826,7 +854,25 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
         }
     }
    
+    //HERE
+    char dnt[z];
+    for(int i=0;i<z;i++){
+        dnt[i]=QRchar[i];
+    }
+    int dmt=0;
+    for(int i=0;i<bitcount;i++){
+        if(bitdata[i]==2){
+            dmt++;
+        }
+    }
+    dmt /=8;
+    char error[dmt];
+    errorcorrection(z,dnt,dmt,error);  
 
+    for(int i=0;i<dmt;i++){
+        binaryconverter(8,data,error[i]);
+        datawriter(8,bitcount,bitdata,data);
+    }
 
     for(int i=0;i<bitcount;i++){
         writedata(QRsize,QRdata,bitdata[i]);
@@ -844,8 +890,7 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
     int QRmask[QRsize][QRsize];
     for(int i=0;i<QRsize;i++){
         for(int j=0;j<QRsize;j++){
-            // QRmask[i][j]=0;
-            QRmask[i][j]=1;
+            QRmask[i][j]=0;
         }
     }
     for(int i=0;i<QRsize;i++){
@@ -856,8 +901,100 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
         }
     }
     dataconverter(QRsize,stringinput,QRdata,QRchar,version);
-    mask(QRsize,QRmask,QRdata);
+    int mk=mask(QRsize,QRmask,QRdata);
     //FORMAT INFO
+    //0-LOW 1-MEDIUM 2-QUARTILE 3-HIGH
+    int format[5];
+    for(int i=0;i<5;i++){
+        format[i]=0;
+    }
+
+    if(i==0){
+        format[0]=0,format[1]=1;
+    }
+    else if(i==1){
+        format[0]=0,format[1]=0;
+    }
+    else if(i==2){
+        format[0]=1,format[1]=1;
+    }
+    else if(i==3){
+        format[0]=1,format[1]=0;
+    }
+    if(mk==0){
+    }
+    else if (mk==1){
+        format[2]=0,format[3]=0,format[4]=1;
+    }
+    else if (mk==2){
+        format[2]=0,format[3]=1,format[4]=0;
+    }
+    else if (mk==3){
+        format[2]=0,format[3]=1,format[4]=1;
+    }
+    else if (mk==4){
+        format[2]=1,format[3]=0,format[4]=0;
+    }
+    else if (mk==5){
+        format[2]=1,format[3]=0,format[4]=1;
+    }
+    else if (mk==6){
+        format[2]=1,format[3]=1,format[4]=0;
+    }
+    else if (mk==7){
+        format[2]=1,format[3]=1,format[4]=1;
+    }
+    
+    int ercr[15];
+    ercr[0]=format[0], ercr[1]=format[1], ercr[2]=format[2], ercr[3]=format[3], ercr[4]=format[4];
+    int genpol[]={1,0,1,0,0,1,1,0,1,1,1};
+    int count;
+    while(1){
+        if(count==5){
+                break;
+            }
+        count=0;
+        for(int i=0;i<15;i++){
+            if(ercr[i]==0){
+                count++;
+            }
+            else{
+                break;
+            }
+            for(int i=count;i<11+count;i++){
+                if(genpol[i-count]==0){
+                }
+                else if(genpol[i-count]==1){
+                    if(ercr[i]==0){
+                        ercr[i]=1;
+                    }
+                    else if(ercr[i]==1){
+                        ercr[i]=0;
+                    }
+                }
+            }
+            
+        }
+    }
+    ercr[0]=format[0], ercr[1]=format[1], ercr[2]=format[2], ercr[3]=format[3], ercr[4]=format[4];
+    QRdata[10][2]=ercr[0],QRdata[10][3]=ercr[1],QRdata[10][4]=ercr[2],QRdata[10][5]=ercr[3],QRdata[10][6]=ercr[4],QRdata[10][7]=ercr[5],QRdata[10][9]=ercr[6],QRdata[10][10]=ercr[7];
+    QRdata[10][QRsize-3]=ercr[14],QRdata[10][QRsize-4]=ercr[13],QRdata[10][QRsize-5]=ercr[12],QRdata[10][QRsize-6]=ercr[11],QRdata[10][QRsize-7]=ercr[10],QRdata[10][QRsize-8]=ercr[9],QRdata[10][QRsize-9]=ercr[8],QRdata[10][QRsize-10]=ercr[7];
+    for(int i=0;i<7;i++){
+        QRdata[QRsize-3-i][10]=ercr[i];
+    }
+    for(int i=7;i<15;i++){
+        QRdata[i-5][10]=ercr[i];
+    }
+    
+
+    for(int i=0;i<QRsize;i++){
+        for(int j=0;j<QRsize;j++){
+            if(QRdata[i][j]==0){
+                QRdata[i][j]=2;
+            }
+        }
+    }
+
     display(QRsize,QRdata,QRsize,QRsize);
     printf("\n\n");
 }

@@ -1,6 +1,9 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
+
+void errorcorrection(int IPsize, char Input[IPsize],int ECsize , char EC[ECsize]);
+int mask(int QRsize,int Maskdata[QRsize][QRsize],int QRdata[QRsize][QRsize]);
 void fixptr(int QRsize, int QRdata[QRsize][QRsize],int b);
 void findptr(int QRsize , int QRdata[QRsize][QRsize],int x,int y);
 void initalize(int version , int strsize , int corlvl , int QRsize);
