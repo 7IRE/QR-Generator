@@ -267,7 +267,7 @@ void initalize(int version , int strsize , int corlvl , int QRsize){
             QRdata[i][j]=0;
         }
     }
-    QRinit(QRsize,strsize,QRchar,QRdata,version,corlvl);
+    QRinit(QRsize,strsize,QRchar,QRdata,version,i,corlvl);
 }
 
 
@@ -879,7 +879,7 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
     }
 }
 
-void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version,int i){
+void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version,int i,int m){
     fixptr(QRsize,QRdata,8);
     findptr(QRsize,QRdata,1,1);
     findptr(QRsize,QRdata,QRsize-10,1);
@@ -909,16 +909,16 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
         format[i]=0;
     }
 
-    if(i==0){
+    if(m==0){
         format[0]=0,format[1]=1;
     }
-    else if(i==1){
+    else if(m==1){
         format[0]=0,format[1]=0;
     }
-    else if(i==2){
+    else if(m==2){
         format[0]=1,format[1]=1;
     }
-    else if(i==3){
+    else if(m==3){
         format[0]=1,format[1]=0;
     }
     if(mk==0){
