@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <conio.h>
 
-void errorcorrection(int IPsize, char Input[IPsize],int ECsize , char EC[ECsize]){
+void errorcorrection(int IPsize, char Input[IPsize],int ECsize , int EC[ECsize]){
     int eqn,x,temp,eqnt;
     int maineq=1;
     for(int i=0;i<ECsize;i++){
@@ -13,21 +13,21 @@ void errorcorrection(int IPsize, char Input[IPsize],int ECsize , char EC[ECsize]
         maineq=1;
         for(int count=0;count<IPsize;count++){
             eqn=1,eqnt=1;
-            for(int i=0;i<IPsize;i++){
-                if(count!=i){
-                    eqn *= (x-(int)Input[i]);
+            for(int j=0;j<IPsize;j++){
+                if(count!=j){
+                    eqn *= (x-(int)Input[j]);
                 }
                 else{
-                    temp=i;
+                    temp=j;
                 }
             }
             for(int i=0;i<IPsize;i++){
                 if(temp!=i){
-                    eqnt=temp-(int)Input[i];
+                    eqnt *= (temp-(int)Input[i]);
                 }
             }
             eqn /= eqnt;
-            maineq *= Input[count]*eqn;
+            maineq *= ((int)Input[count]) * eqn;
         }
         EC[i]=maineq%131;
     }
@@ -866,8 +866,9 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
         }
     }
     dmt /=8;
-    char error[dmt];
+    int error[dmt];
     errorcorrection(z,dnt,dmt,error);  
+    printf("%d",dmt);
 
     for(int i=0;i<dmt;i++){
         binaryconverter(8,data,error[i]);
@@ -878,6 +879,46 @@ void dataconverter(int QRsize ,int stringinput,int QRdata[QRsize][QRsize],char Q
         writedata(QRsize,QRdata,bitdata[i]);
     }
 }
+void vermaskcorlvl(int format[5],int ercr[15],int mk){
+    // Use a fixed lookup table for the 15-bit format strings. The format
+    // string depends only on the error-correction level (L/M/Q/H) and the
+    // mask pattern (0..7). The caller provides the first two bits of the
+    // format through format[0..1] (EC level) and mk is the mask index.
+    //
+    // Map format[0..1] to an index: L(01)=0, M(00)=1, Q(11)=2, H(10)=3.
+    static const char *format_table[4][8] = {
+        // L
+        {"111011111000100","111001011110011","111110110101010","111100010011101",
+         "110011000101111","110001100011000","110110001000001","110100101110110"},
+        // M
+        {"101010000010010","101000100100101","101111001111100","101101101001011",
+         "100010111111001","100000011001110","100111110010111","100101010100000"},
+        // Q
+        {"011010101011111","011000001101000","011111100110001","011101000000110",
+         "010010010110100","010000110000011","010111011011010","010101111101101"},
+        // H
+        {"001011010001001","001001110111110","001110011100111","001100111010000",
+         "000011101100010","000001001010101","000110100001100","000100000111011"}
+    };
+
+    // Determine EC index from format[0..1]
+    int ec_index = -1;
+    if (format[0] == 0 && format[1] == 1) ec_index = 0; // L
+    else if (format[0] == 0 && format[1] == 0) ec_index = 1; // M
+    else if (format[0] == 1 && format[1] == 1) ec_index = 2; // Q
+    else if (format[0] == 1 && format[1] == 0) ec_index = 3; // H
+
+    // Default to zeros if inputs are invalid
+    for (int i = 0; i < 15; ++i) ercr[i] = 0;
+
+    if (ec_index >= 0 && mk >= 0 && mk < 8) {
+        const char *s = format_table[ec_index][mk];
+        for (int i = 0; i < 15; ++i) {
+            ercr[i] = (s[i] == '1') ? 1 : 0;
+        }
+    }
+}
+
 
 void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRsize][QRsize],int version,int i,int m){
     fixptr(QRsize,QRdata,8);
@@ -946,37 +987,8 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
     }
     
     int ercr[15];
-    ercr[0]=format[0], ercr[1]=format[1], ercr[2]=format[2], ercr[3]=format[3], ercr[4]=format[4];
-    int genpol[]={1,0,1,0,0,1,1,0,1,1,1};
-    int count;
-    while(1){
-        if(count==5){
-                break;
-            }
-        count=0;
-        for(int i=0;i<15;i++){
-            if(ercr[i]==0){
-                count++;
-            }
-            else{
-                break;
-            }
-            for(int i=count;i<11+count;i++){
-                if(genpol[i-count]==0){
-                }
-                else if(genpol[i-count]==1){
-                    if(ercr[i]==0){
-                        ercr[i]=1;
-                    }
-                    else if(ercr[i]==1){
-                        ercr[i]=0;
-                    }
-                }
-            }
-            
-        }
-    }
-    ercr[0]=format[0], ercr[1]=format[1], ercr[2]=format[2], ercr[3]=format[3], ercr[4]=format[4];
+    vermaskcorlvl(format,ercr,mk);
+    
     QRdata[10][2]=ercr[0],QRdata[10][3]=ercr[1],QRdata[10][4]=ercr[2],QRdata[10][5]=ercr[3],QRdata[10][6]=ercr[4],QRdata[10][7]=ercr[5],QRdata[10][9]=ercr[6],QRdata[10][10]=ercr[7];
     QRdata[10][QRsize-3]=ercr[14],QRdata[10][QRsize-4]=ercr[13],QRdata[10][QRsize-5]=ercr[12],QRdata[10][QRsize-6]=ercr[11],QRdata[10][QRsize-7]=ercr[10],QRdata[10][QRsize-8]=ercr[9],QRdata[10][QRsize-9]=ercr[8],QRdata[10][QRsize-10]=ercr[7];
     for(int i=0;i<7;i++){
@@ -986,14 +998,6 @@ void QRinit(int QRsize ,int stringinput ,char QRchar[stringinput],int QRdata[QRs
         QRdata[i-5][10]=ercr[i];
     }
     
-
-    for(int i=0;i<QRsize;i++){
-        for(int j=0;j<QRsize;j++){
-            if(QRdata[i][j]==0){
-                QRdata[i][j]=2;
-            }
-        }
-    }
 
     display(QRsize,QRdata,QRsize,QRsize);
     printf("\n\n");
