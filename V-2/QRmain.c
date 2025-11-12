@@ -53,6 +53,38 @@ void display(int QRsize,int arr[QRsize][QRsize],int row,int column){
     }
 }
 
+void alignment(int QRsize ,int QRdata[QRsize][QRsize],int x,int y){
+    x=x-2,y=y-2;
+    for(int i=0;i<5;i++){
+       if( QRdata[i+x][y]!=2||QRdata[x][y+i]!=2||QRdata[i+x][y+4]!=2||QRdata[x+4][y+i]!=2){
+        return;
+       }
+    }
+    for(int i=0;i<3;i++){
+        if( QRdata[i+x+1][y+1]!=2||QRdata[x+1][y+1+i]!=2||QRdata[i+1+x][y+1+2]!=2||QRdata[x+1+2][y+1+i]!=2){
+            return;
+        }
+    }
+    if(QRdata[x+2][y+2]!=2){
+        return;
+    }
+
+
+    for(int i=0;i<5;i++){
+        QRdata[i+x][y]=1;
+        QRdata[x][y+i]=1;
+        QRdata[i+x][y+4]=1;
+        QRdata[x+4][y+i]=1;
+    }
+    for(int i=0;i<3;i++){
+        QRdata[i+x+1][y+1]=0;
+        QRdata[x+1][y+1+i]=0;
+        QRdata[i+1+x][y+1+2]=0;
+        QRdata[x+1+2][y+1+i]=0;
+    }
+    QRdata[x+2][y+2]=1;
+}
+
 int correctionlevel(){
     printf("\033[2J");
     printf("\033[0;0HENTER CORRECTION LEVEL(A-D FOR LEFT AND RIGHT , E FOR ENTER)");
@@ -398,7 +430,68 @@ int main(){
         QRdata[QRsize-7+i][0]=1;
         QRdata[QRsize-7+i][6]=1;
     }
+    //ALIGNMENT PATTERN
+    int s;
+    int arr[7]={0}; 
+    switch (version){
+        case 1  : break;
+        case 2  : arr[0]=6,arr[1]=18,s=2; break;
+        case 3  : arr[0]=6,arr[1]=22,s=2; break;
+        case 4  : arr[0]=6,arr[1]=26,s=2; break;
+        case 5  : arr[0]=6,arr[1]=30,s=2; break;
+        case 6  : arr[0]=6,arr[1]=34,s=2; break;
+        case 7  : arr[0]=6,arr[1]=22,arr[2]=38,s=3; break;
+        case 8  : arr[0]=6,arr[1]=24,arr[2]=42,s=3; break;
+        case 9  : arr[0]=6,arr[1]=26,arr[2]=46,s=3; break;
+        case 10 : arr[0]=6,arr[1]=28,arr[2]=50,s=3; break;
+        case 11 : arr[0]=6,arr[1]=30,arr[2]=54,s=3; break;
+        case 12 : arr[0]=6,arr[1]=32,arr[2]=58,s=3; break;
+        case 13 : arr[0]=6,arr[1]=34,arr[2]=62,s=3; break;
+        case 14 : arr[0]=6,arr[1]=28,arr[2]=50,s=3; break;
+        case 15 : arr[0]=6,arr[1]=26,arr[2]=48,arr[3]=70,s=4; break; 
+        case 16 : arr[0]=6,arr[1]=26,arr[2]=50,arr[3]=74,s=4; break;
+        case 17 : arr[0]=6,arr[1]=30,arr[2]=54,arr[3]=78,s=4; break;
+        case 18 : arr[0]=6,arr[1]=30,arr[2]=56,arr[3]=82,s=4; break;
+        case 19 : arr[0]=6,arr[1]=30,arr[2]=56,arr[3]=86,s=4; break;
+        case 20 : arr[0]=6,arr[1]=34,arr[2]=62,arr[3]=90,s=4; break;
+        case 21 : arr[0]=6,arr[1]=28,arr[2]=50,arr[3]=72,arr[4]=94,s=5; break;
+        case 22 : arr[0]=6,arr[1]=26,arr[2]=50,arr[3]=74,arr[4]=98,s=5; break;
+        case 23 : arr[0]=6,arr[1]=30,arr[2]=54,arr[3]=78,arr[4]=102,s=5; break;
+        case 24 : arr[0]=6,arr[1]=28,arr[2]=54,arr[3]=80,arr[4]=106,s=5; break;
+        case 25 : arr[0]=6,arr[1]=32,arr[2]=58,arr[3]=84,arr[4]=110,s=5; break;
+        case 26 : arr[0]=6,arr[1]=30,arr[2]=58,arr[3]=86,arr[4]=114,s=5; break;
+        case 27 : arr[0]=6,arr[1]=34,arr[2]=62,arr[3]=90,arr[4]=118,s=5; break;
+        case 28 : arr[0]=6,arr[1]=26,arr[2]=50,arr[3]=74,arr[4]=98,arr[5]=122,s=6; break;
+        case 29 : arr[0]=6,arr[1]=30,arr[2]=54,arr[3]=78,arr[4]=102,arr[5]=126,s=6; break;
+        case 30 : arr[0]=6,arr[1]=26,arr[2]=52,arr[3]=78,arr[4]=104,arr[5]=130,s=6; break;
+        case 31 : arr[0]=6,arr[1]=30,arr[2]=56,arr[3]=82,arr[4]=108,arr[5]=134,s=6; break;
+        case 32 : arr[0]=6,arr[1]=30,arr[2]=56,arr[3]=82,arr[4]=108,arr[5]=134,s=6; break;
+        case 33 : arr[0]=6,arr[1]=30,arr[2]=58,arr[3]=86,arr[4]=114,arr[5]=142,s=6; break;
+        case 34 : arr[0]=6,arr[1]=34,arr[2]=62,arr[3]=90,arr[4]=118,arr[5]=146,s=6; break;
+        case 35 : arr[0]=6,arr[1]=30,arr[2]=54,arr[3]=78,arr[4]=102,arr[5]=126,arr[6]=150,s=7; break;
+        case 36 : arr[0]=6,arr[1]=24,arr[2]=50,arr[3]=76,arr[4]=102,arr[5]=128,arr[6]=154,s=7; break;
+        case 37 : arr[0]=6,arr[1]=28,arr[2]=54,arr[3]=80,arr[4]=106,arr[5]=132,arr[6]=158,s=7; break;
+        case 38 : arr[0]=6,arr[1]=32,arr[2]=58,arr[3]=84,arr[4]=110,arr[5]=136,arr[6]=162,s=7; break;
+        case 39 : arr[0]=6,arr[1]=26,arr[2]=54,arr[3]=82,arr[4]=110,arr[5]=138,arr[6]=166,s=7; break;
+        case 40 : arr[0]=6,arr[1]=30,arr[2]=58,arr[3]=86,arr[4]=114,arr[5]=142,arr[6]=170,s=7; break;
+    }
+    for(int i=0;i<s;i++){
+        for(int j=0;j<s;j++){
+            alignment(QRsize,QRdata,arr[i],arr[j]);
+        }
+    }
     
+    
+
+
+
+
+
+
+
+
+
+
     display(QRsize,QRdata,QRsize,QRsize);
     printf("\033[%d;%dH",QRsize+10,QRsize+4);
     printf("\n\n");
