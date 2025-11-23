@@ -55,7 +55,7 @@ int correctionlevel(){
 int main(){
     int corlvl=correctionlevel();
     int strsize,QRsize,version;
-    printf("\033[5;0HENTER MESSAGE SIZE:");
+    printf("\033[5;0HENTER AMOUNT OF BITS TO STORE :");
     scanf("%d",&strsize);
     if(corlvl==0){
         if(strsize<=17){

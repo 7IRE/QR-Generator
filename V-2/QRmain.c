@@ -331,7 +331,7 @@ int main(){
     for(int i=0;i<=strsize;i++){
         QRchar[i]=' ';
     }
-    printf("Enter Data To Encode:");
+    printf("Enter Data To Encode in binary:");
     while(getchar()=='\n');
     char cbuf;
     int i=0;
@@ -480,6 +480,7 @@ int main(){
             alignment(QRsize,QRdata,arr[i],arr[j]);
         }
     }
+    
     
     
 
