@@ -200,7 +200,7 @@
             padding: 28px;
             display: flex;
             flex-direction: column;
-            min-height: 520px;
+            min-height: 600px;
             transition: background 0.2s, border-color 0.2s;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
@@ -213,7 +213,7 @@
             position: sticky;
             top: 88px;
             height: fit-content;
-            min-height: 520px;
+            min-height: 600px;
         }
 
         .panel-header {
@@ -357,27 +357,27 @@
         /* ─── Color Presets ───────────────────────────────────────── */
         .preset-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-bottom: 4px;
         }
 
         .preset-btn {
             display: inline-flex;
-            border-radius: var(--radius-sm);
+            border-radius: 99px;
             overflow: hidden;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             padding: 0;
             width: 48px;
-            height: 26px;
+            height: 24px;
             cursor: pointer;
             transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            background: none;
         }
 
         .preset-btn:hover {
-            transform: translateY(-1px);
+            transform: scale(1.05);
             border-color: var(--text-secondary);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         .preset-sq {
@@ -939,9 +939,7 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ─── How it works ────────────────────────────────────────── */
-        .how-it-works { margin-top: 36px; }
-
+        /* ─── Sections (How it works & Features) ──────────────────── */
         .section-label {
             font-size: 0.74rem;
             font-weight: 600;
@@ -951,6 +949,9 @@
             margin-bottom: 14px;
         }
 
+        .how-it-works { margin-top: 40px; }
+        .features { margin-top: 40px; }
+
         .steps-row {
             display: grid;
             grid-template-columns: 1fr auto 1fr auto 1fr;
@@ -959,7 +960,6 @@
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: background 0.2s, border-color 0.2s;
         }
 
         .step {
@@ -987,53 +987,46 @@
         .step h3 { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
         .step p   { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
 
-        .step-arrow {
+        .step-divider {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 10px;
-            color: var(--text-tertiary);
+            color: var(--border);
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
-            align-self: stretch;
+            padding: 0 10px;
         }
 
-        /* ─── Trust strip ─────────────────────────────────────────── */
-        .trust-strip {
+        .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--bg-surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            margin-top: 24px;
-            overflow: hidden;
-        }
-
-        .trust-item {
-            background: var(--bg-surface);
-            padding: 24px 28px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            transition: background 0.2s;
+            gap: 12px;
         }
 
-        .trust-item-icon {
+        .feature-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 34px;
-            height: 34px;
+            width: 38px;
+            height: 38px;
             background: var(--success-dim);
             border: 1px solid rgba(34,197,94,0.2);
             border-radius: var(--radius-sm);
             color: var(--success);
-            margin-bottom: 4px;
         }
 
-        .trust-item h3 { font-size: 0.92rem; font-weight: 600; color: var(--text-primary); }
-        .trust-item p  { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; }
+        .feature-card h3 { font-size: 0.95rem; font-weight: 600; color: var(--text-primary); }
+        .feature-card p  { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
 
         /* ─── Footer ──────────────────────────────────────────────── */
         .footer {
@@ -1041,7 +1034,6 @@
             padding: 20px 32px;
             font-size: 0.8rem;
             color: var(--text-tertiary);
-            transition: border-color 0.2s;
             margin-top: auto;
         }
 
@@ -1073,28 +1065,15 @@
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            .panel {
-                min-height: auto;
-            }
-            .panel.output-panel {
-                position: static;
-            }
-            .steps-row {
-                grid-template-columns: 1fr;
-            }
-            .step-arrow {
-                display: none;
-            }
-            .step {
-                border-bottom: 1px solid var(--border);
-                padding: 18px 20px;
-            }
-            .step:last-child {
-                border-bottom: none;
-            }
-            .trust-strip {
-                grid-template-columns: 1fr;
-            }
+            .panel { min-height: auto; }
+            .panel.output-panel { position: static; min-height: auto; }
+            
+            .steps-row { grid-template-columns: 1fr; }
+            .step-divider { display: none; }
+            .step { border-bottom: 1px solid var(--border); padding: 18px 20px; }
+            .step:last-child { border-bottom: none; }
+            
+            .features-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 600px) {
@@ -1229,7 +1208,7 @@
                 </div>
 
                 <form id="qr-form" class="form-body">
-
+                    
                     <!-- Content Input with Clear & Counter -->
                     <div>
                         <label class="field-label" for="text-input">Content</label>
@@ -1322,11 +1301,11 @@
                             <input type="file" id="logo-input" class="logo-input" accept="image/png, image/jpeg, image/svg+xml">
                             <label for="logo-input" class="logo-label" id="logo-label">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                Upload Logo
+                                Upload or Paste Logo
                             </label>
                             <button type="button" id="logo-clear" class="logo-clear">Remove</button>
                         </div>
-
+                        
                         <!-- Dynamic Logo Size Slider (Hidden until logo is uploaded) -->
                         <div id="logo-size-container" style="display: none; margin-top: 10px;">
                             <div class="slider-row">
@@ -1450,10 +1429,9 @@
                     <h3>Enter your content</h3>
                     <p>Type or paste any text — a URL, contact detail, Wi-Fi password, or plain message.</p>
                 </div>
-                <div class="step-arrow" aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                        <polyline points="12 5 19 12 12 19"/>
+                <div class="step-divider" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
                     </svg>
                 </div>
                 <div class="step" role="listitem">
@@ -1461,10 +1439,9 @@
                     <h3>C++ compiles it</h3>
                     <p>Your input is processed by a native C++ algorithm compiled to WebAssembly — no third-party QR libraries.</p>
                 </div>
-                <div class="step-arrow" aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                        <polyline points="12 5 19 12 12 19"/>
+                <div class="step-divider" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
                     </svg>
                 </div>
                 <div class="step" role="listitem">
@@ -1475,34 +1452,37 @@
             </div>
         </div>
 
-        <!-- ── Trust strip ─────────────────────────────────────── -->
-        <div class="trust-strip" role="list">
-            <div class="trust-item" role="listitem">
-                <div class="trust-item-icon" aria-hidden="true">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
+        <!-- ── Features ───────────────────────────────────────── -->
+        <div class="features">
+            <p class="section-label">Features</p>
+            <div class="features-grid" role="list">
+                <div class="feature-card" role="listitem">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                    </div>
+                    <h3>100% Private</h3>
+                    <p>Your data is never stored, logged, or sent to any third party.</p>
                 </div>
-                <h3>100% Private</h3>
-                <p>Your data is never stored, logged, or sent to any third party.</p>
-            </div>
-            <div class="trust-item" role="listitem">
-                <div class="trust-item-icon" aria-hidden="true">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                    </svg>
+                <div class="feature-card" role="listitem">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </div>
+                    <h3>Native Speed</h3>
+                    <p>Compiled from C++ to WebAssembly for near-native execution speed.</p>
                 </div>
-                <h3>Native Speed</h3>
-                <p>Compiled from C++ to WebAssembly for near-native execution speed.</p>
-            </div>
-            <div class="trust-item" role="listitem">
-                <div class="trust-item-icon" aria-hidden="true">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
+                <div class="feature-card" role="listitem">
+                    <div class="feature-icon" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h3>Open Source</h3>
+                    <p>Full C++ implementation and Wasm build pipeline available on GitHub.</p>
                 </div>
-                <h3>Open Source</h3>
-                <p>Full C++ implementation and Wasm build pipeline available on GitHub.</p>
             </div>
         </div>
 
@@ -1790,7 +1770,7 @@
             grad.addColorStop(0, `rgb(${r},${g},${b})`);
             grad.addColorStop(1, '#000');
             ctx.fillStyle = grad;
-
+            
             if (ctx.roundRect) {
                 ctx.beginPath();
                 ctx.roundRect(0, 0, W, H, 8);
@@ -1873,7 +1853,7 @@
             const [r, g, b] = hsvToRgb(this.h, this.s, this.v);
             return rgbToHex(r, g, b);
         }
-
+        
         setHex(hex) {
             const [r, g, b] = hexToRgb(hex);
             const [h, s, v] = rgbToHsv(r, g, b);
@@ -1902,6 +1882,7 @@
     // State
     let lastMatrix = null, lastSize = 0, lastECC = 1;
     let logoImage = null;
+    let logoDataUrl = null;
 
     // ECC Limits for logo size (% of width)
     const ECC_LIMITS = {
@@ -1981,7 +1962,7 @@
         });
     });
 
-    // --- Logo Upload & Constraints ---
+    // --- Logo Upload, Paste & Constraints ---
     const logoInput = $('logo-input');
     const logoClear = $('logo-clear');
     const logoSizeContainer = $('logo-size-container');
@@ -1994,14 +1975,14 @@
     function updateLogoLimit() {
         const currentECC = parseInt(eccSelect.value, 10);
         const maxPct = ECC_LIMITS[currentECC];
-
+        
         logoSizeSlider.max = maxPct;
-
-        // If current slider value exceeds the new max, clamp it
-        if (parseInt(logoSizeSlider.value, 10) > maxPct) {
+        
+        // Force clamp if the slider value exceeds the new max
+        if (Number(logoSizeSlider.value) > maxPct) {
             logoSizeSlider.value = maxPct;
-            logoSizeValue.textContent = maxPct + '%';
         }
+        logoSizeValue.textContent = logoSizeSlider.value + '%';
 
         // Show warning if ECC is low
         if (currentECC === 0) {
@@ -2015,20 +1996,17 @@
     }
 
     eccSelect.addEventListener('change', updateLogoLimit);
-    // Initialize limit on load
-    updateLogoLimit();
+    updateLogoLimit(); // Initialize on load
 
     logoSizeSlider.addEventListener('input', () => {
         logoSizeValue.textContent = logoSizeSlider.value + '%';
         if (lastMatrix) drawQR(lastMatrix, lastSize);
     });
 
-    logoInput.addEventListener('change', e => {
-        const file = e.target.files[0];
-        if (!file) return;
-
+    // Extracted logic to handle both File Upload and Clipboard Paste
+    function processLogoFile(file, fallbackName = 'image') {
         if (!file.type.startsWith('image/')) {
-            showToast('Please upload a valid image file.', true);
+            showToast('Please provide a valid image.', true);
             return;
         }
 
@@ -2040,41 +2018,81 @@
                 const canvas = document.createElement('canvas');
                 const maxDim = 256;
                 let w = img.width, h = img.height;
-
+                
                 if (w > maxDim || h > maxDim) {
                     const scale = Math.min(maxDim / w, maxDim / h);
                     w *= scale;
                     h *= scale;
                 }
-
+                
                 canvas.width = w;
                 canvas.height = h;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, w, h);
-
-                // Create final image from canvas
+                
+                // Save original base64 for SVG if it's an SVG, else use compressed PNG
+                if (file.type === 'image/svg+xml') {
+                    logoDataUrl = ev.target.result; 
+                } else {
+                    logoDataUrl = canvas.toDataURL('image/png');
+                }
+                
+                // Create final image for canvas rendering
                 logoImage = new Image();
                 logoImage.onload = () => {
                     logoSizeContainer.style.display = 'block';
                     logoClear.style.display = 'block';
-                    $('logo-label').innerHTML = `✓ Logo Loaded (${file.name.slice(0, 10)}...)`;
-                    if (lastMatrix) drawQR(lastMatrix, lastSize);
+                    const fileName = file.name || fallbackName;
+                    $('logo-label').innerHTML = `✓ Logo Loaded (${fileName.slice(0, 10)}...)`;
+                    updateLogoLimit();
                 };
+                // For canvas drawing, we can just use the rasterized PNG
                 logoImage.src = canvas.toDataURL('image/png');
             };
             img.src = ev.target.result;
         };
         reader.readAsDataURL(file);
+    }
+
+    logoInput.addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) processLogoFile(file);
+    });
+
+    // Handle Paste Event
+    document.addEventListener('paste', e => {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        let foundImage = false;
+
+        for (let index in items) {
+            const item = items[index];
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                const blob = item.getAsFile();
+                if (blob) {
+                    // Create a pseudo-file name for the UI
+                    const file = new File([blob], "pasted-image", { type: blob.type });
+                    processLogoFile(file, "pasted-image");
+                    foundImage = true;
+                    break;
+                }
+            }
+        }
+
+        // Prevent default paste behavior if an image was found and handled
+        if (foundImage) {
+            e.preventDefault();
+        }
     });
 
     logoClear.addEventListener('click', () => {
         logoImage = null;
+        logoDataUrl = null;
         logoInput.value = '';
         logoClear.style.display = 'none';
         logoSizeContainer.style.display = 'none';
         $('logo-label').innerHTML = `
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            Upload Logo
+            Upload or Paste Logo
         `;
         if (lastMatrix) drawQR(lastMatrix, lastSize);
     });
@@ -2090,7 +2108,7 @@
         btn.disabled = true;
         $('btn-text').textContent  = 'Generating…';
         $('spinner').style.display = 'block';
-
+        
         // Loading state
         $('empty-state').style.display = 'none';
         $('qr-result').style.display   = 'none';
@@ -2102,7 +2120,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({ text, correctionLevel }),
             });
-
+            
             if (!res.ok) {
                 const errText = await res.text().catch(() => 'Unknown error');
                 throw new Error(`Server error (${res.status}): ${errText.slice(0, 80)}`);
@@ -2110,11 +2128,11 @@
 
             const { size, matrix } = await res.json();
             if (!matrix || !size) throw new Error('Invalid matrix from server.');
-
+            
             lastMatrix = matrix; lastSize = size; lastECC = correctionLevel;
             drawQR(matrix, size);
             updateStats(size, correctionLevel);
-
+            
             // Success state
             $('skeleton-box').style.display = 'none';
             $('qr-result').style.display = 'flex';
@@ -2147,19 +2165,19 @@
             for (let x = 0; x < size; x++)
                 if (matrix[y][x] === 1)
                     ctx.fillRect(padding + x * cell, padding + y * cell, cell, cell);
-
+        
         // Draw Logo Overlay (strictly sized)
         if (logoImage) {
             const percent = parseInt(logoSizeSlider.value, 10) / 100;
             const logoSize = Math.floor(canvas.width * percent);
             const x = (canvas.width - logoSize) / 2;
             const y = (canvas.height - logoSize) / 2;
-
+            
             // Draw background box for contrast (White or background color)
             ctx.fillStyle = bg;
             const b = Math.max(2, Math.floor(cell / 2));
             ctx.fillRect(x - b, y - b, logoSize + b*2, logoSize + b*2);
-
+            
             // Draw the logo
             ctx.drawImage(logoImage, x, y, logoSize, logoSize);
         }
@@ -2186,25 +2204,18 @@
             for (let x = 0; x < size; x++)
                 if (matrix[y][x] === 1)
                     rects += `<rect x="${padding+x*cell}" y="${padding+y*cell}" width="${cell}" height="${cell}" fill="${fg}"/>`;
-
+        
         let logoStr = '';
-        if (logoImage) {
+        if (logoImage && logoDataUrl) {
             const percent = parseInt(logoSizeSlider.value, 10) / 100;
             const logoSize = Math.floor(dim * percent);
             const x = (dim - logoSize) / 2;
             const y = (dim - logoSize) / 2;
             const b = Math.max(2, Math.floor(cell / 2));
-
-            // Convert compressed logo to base64 for SVG
-            const canvas = document.createElement('canvas');
-            canvas.width = logoImage.width;
-            canvas.height = logoImage.height;
-            canvas.getContext('2d').drawImage(logoImage, 0, 0);
-            const b64 = canvas.toDataURL('image/png');
-
+            
             logoStr = `
                 <rect x="${x-b}" y="${y-b}" width="${logoSize+b*2}" height="${logoSize+b*2}" fill="${bg}"/>
-                <image href="${b64}" x="${x}" y="${y}" width="${logoSize}" height="${logoSize}"/>
+                <image href="${logoDataUrl}" x="${x}" y="${y}" width="${logoSize}" height="${logoSize}"/>
             `;
         }
 
@@ -2249,7 +2260,7 @@
             } else {
                 throw new Error('Web Share API not supported');
             }
-        } catch (err) {
+        } catch (err) { 
             if (err.name !== 'AbortError') {
                 try {
                     await navigator.clipboard.writeText(window.location.href);
