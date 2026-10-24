@@ -1,0 +1,8 @@
+{
+  "buildCommand": "bash scripts/build-wasm.sh",
+  "functions": {
+    "api/generate.js": {
+      "includeFiles": "src/qr_module.*"
+    }
+  }
+}

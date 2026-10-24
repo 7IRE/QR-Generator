@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Studio | Secure C++ WebAssembly</title>
+    <style>
+        :root {
+            --bg-base: #09090b;
+            --bg-surface: #121215;
+            --bg-surface-hover: #1c1c21;
+            --border: #27272a;
+            --border-focus: #3f3f46;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #38bdf8; /* Professional Cyan/Sky Blue */
+            --accent-hover: #0ea5e9;
+            --btn-bg: #18181b;
+            --btn-hover: #27272a;
+            --success: #22c55e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Navigation --- */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            height: 60px;
+            background-color: var(--bg-base);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-brand {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-brand svg {
+            color: var(--accent);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            border-color: var(--border);
+        }
+
+        /* --- Main Layout --- */
+        .main-content {
+            flex: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* --- Workspace Grid --- */
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: var(--bg-base);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.15s ease;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* --- Buttons --- */
+        .btn-primary {
+            width: 100%;
+            padding: 10px 16px;
+            background-color: var(--text-main);
+            color: var(--bg-base);
+            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background-color: var(--btn-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: var(--btn-hover);
+        }
+
+        /* --- Output Panel --- */
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 380px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empty-state svg {
+            opacity: 0.4;
+        }
+
+        .qr-result {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .qr-canvas-wrapper {
+            background-color: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* --- Trust & Privacy Section --- */
+        .trust-section {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .trust-item svg {
+            color: var(--success);
+            width: 20px;
+            height: 20px;
+        }
+
+        .trust-item h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .trust-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* --- Loader --- */
+        .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-top-color: var(--bg-base);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <rect x="7" y="7" width="3" height="3"></rect>
+                <rect x="14" y="7" width="3" height="3"></rect>
+                <rect x="7" y="14" width="3" height="3"></rect>
+                <rect x="14" y="14" width="3" height="3"></rect>
+            </svg>
+            QR Studio
+        </div>
+        <div class="nav-actions">
+            <button id="share-btn" class="btn-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+                Share
+            </button>
+            <a href="https://github.com/7IRE/QR-Generator" target="_blank" class="btn-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                GitHub
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <h1>Generate QR Codes Securely</h1>
+            <p>Powered by C++ and WebAssembly for high-performance, native-speed generation.</p>
+        </div>
+
+        <div class="workspace">
+            <!-- Left Panel: Inputs -->
+            <div class="panel">
+                <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    Configuration
+                </div>
+                
+                <form id="qr-form">
+                    <div class="form-group">
+                        <label for="text-input">Content</label>
+                        <input type="text" id="text-input" placeholder="Enter text, URL, or data..." autocomplete="off" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="correction-level">Error Correction Level</label>
+                        <select id="correction-level">
+                            <option value="0">Low (7% recovery)</option>
+                            <option value="1" selected>Medium (15% recovery)</option>
+                            <option value="2">Quartile (25% recovery)</option>
+                            <option value="3">High (30% recovery)</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" id="generate-btn" class="btn-primary">
+                        <span class="spinner" id="spinner"></span>
+                        <span id="btn-text">Generate QR Code</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Panel: Output -->
+            <div class="panel output-panel" id="output-panel">
+                <div class="empty-state" id="empty-state">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <path d="M3 9h18"></path><path d="M9 21V9"></path>
+                    </svg>
+                    <p>Your generated QR code will appear here.</p>
+                </div>
+
+                <div class="qr-result" id="qr-result">
+                    <div class="qr-canvas-wrapper">
+                        <canvas id="qr-canvas"></canvas>
+                    </div>
+                    <button id="download-btn" class="btn-primary btn-secondary">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download PNG
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trust & Privacy Section -->
+        <div class="trust-section">
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <h3>100% Private & Secure</h3>
+                    <p>Your data is processed securely and is never stored, logged, or shared with third parties.</p>
+                </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <h3>Native Speed</h3>
+                    <p>Compiled from C++ to WebAssembly, ensuring lightning-fast execution in your browser.</p>
+                </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                    <h3>Open Source</h3>
+                    <p>The entire C++ implementation and Wasm build pipeline are completely open source.</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- Share Button ---
+        document.getElementById('share-btn').addEventListener('click', async () => {
+            try {
+                if (navigator.share) {
+                    await navigator.share({
+                        title: 'QR Studio',
+                        text: 'Generate secure QR codes with C++ and WebAssembly.',
+                        url: window.location.href
+                    });
+                } else {
+                    await navigator.clipboard.writeText(window.location.href);
+                    alert('Link copied to clipboard!');
+                }
+            } catch (err) {
+                console.error('Error sharing:', err);
+            }
+        });
+
+        // --- DOM Elements ---
+        const form = document.getElementById('qr-form');
+        const generateBtn = document.getElementById('generate-btn');
+        const btnText = document.getElementById('btn-text');
+        const spinner = document.getElementById('spinner');
+        const textInput = document.getElementById('text-input');
+        const correctionSelect = document.getElementById('correction-level');
+        const emptyState = document.getElementById('empty-state');
+        const qrResult = document.getElementById('qr-result');
+        const qrCanvas = document.getElementById('qr-canvas');
+        const downloadBtn = document.getElementById('download-btn');
+
+        // --- Generation Logic ---
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = textInput.value.trim();
+            const correctionLevel = parseInt(correctionSelect.value, 10);
+
+            if (!text) return;
+
+            // UI Loading State
+            generateBtn.disabled = true;
+            btnText.textContent = 'Generating...';
+            spinner.style.display = 'block';
+            emptyState.style.display = 'none';
+            qrResult.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, correctionLevel }),
+                });
+
+                if (!response.ok) throw new Error('Server error');
+                const { size, matrix } = await response.json();
+                
+                drawQR(matrix, size);
+
+                // UI Success State
+                qrResult.style.display = 'flex';
+            } catch (error) {
+                console.error(error);
+                alert('Failed to generate QR code. Please try again.');
+                emptyState.style.display = 'flex';
+            } finally {
+                // UI Reset State
+                generateBtn.disabled = false;
+                btnText.textContent = 'Generate QR Code';
+                spinner.style.display = 'none';
+            }
+        });
+
+        // --- Drawing Logic ---
+        function drawQR(matrix, size) {
+            const cellSize = 8; 
+            const padding = 16; 
+            
+            qrCanvas.width = size * cellSize + padding * 2;
+            qrCanvas.height = size * cellSize + padding * 2;
+            
+            const ctx = qrCanvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, qrCanvas.width, qrCanvas.height);
+            
+            ctx.fillStyle = '#000000';
+            for (let y = 0; y < size; y++) {
+                for (let x = 0; x < size; x++) {
+                    if (matrix[y][x] === 1) {
+                        ctx.fillRect(padding + x * cellSize, padding + y * cellSize, cellSize, cellSize);
+                    }
+                }
+            }
+        }
+
+        // --- Download Logic ---
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = qrCanvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
