@@ -200,7 +200,7 @@
             padding: 28px;
             display: flex;
             flex-direction: column;
-            min-height: 600px;
+            min-height: 640px; /* Increased slightly for better baseline */
             transition: background 0.2s, border-color 0.2s;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
@@ -209,11 +209,10 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 3px rgba(0,0,0,0.05);
         }
 
+        /* FIXED: Removed height: fit-content so it stretches to match Configuration */
         .panel.output-panel {
             position: sticky;
             top: 88px;
-            height: fit-content;
-            min-height: 600px;
         }
 
         .panel-header {
@@ -2069,7 +2068,6 @@
             if (item.kind === 'file' && item.type.startsWith('image/')) {
                 const blob = item.getAsFile();
                 if (blob) {
-                    // Create a pseudo-file name for the UI
                     const file = new File([blob], "pasted-image", { type: blob.type });
                     processLogoFile(file, "pasted-image");
                     foundImage = true;
@@ -2078,7 +2076,6 @@
             }
         }
 
-        // Prevent default paste behavior if an image was found and handled
         if (foundImage) {
             e.preventDefault();
         }
