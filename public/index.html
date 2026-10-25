@@ -189,7 +189,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 28px;
-            align-items: stretch;
+            align-items: stretch; /* Ensures equal height */
         }
 
         /* ─── Panel ───────────────────────────────────────────────── */
@@ -200,7 +200,7 @@
             padding: 28px;
             display: flex;
             flex-direction: column;
-            min-height: 640px; /* Increased slightly for better baseline */
+            min-height: 680px; /* Increased to account for new content */
             transition: background 0.2s, border-color 0.2s;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         }
@@ -209,7 +209,6 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        /* FIXED: Removed height: fit-content so it stretches to match Configuration */
         .panel.output-panel {
             position: sticky;
             top: 88px;
@@ -356,7 +355,8 @@
         /* ─── Color Presets ───────────────────────────────────────── */
         .preset-row {
             display: flex;
-            gap: 12px;
+            flex-wrap: wrap; /* Allows wrapping on smaller widths */
+            gap: 8px;
             margin-bottom: 4px;
         }
 
@@ -366,8 +366,8 @@
             overflow: hidden;
             border: 2px solid var(--border);
             padding: 0;
-            width: 48px;
-            height: 24px;
+            width: 42px;
+            height: 22px;
             cursor: pointer;
             transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
             background: none;
@@ -465,7 +465,7 @@
         .logo-upload-wrapper {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 8px;
         }
 
@@ -506,6 +506,18 @@
             padding: 4px;
         }
         .logo-clear:hover { color: var(--text-primary); text-decoration: underline; }
+
+        /* Logo Thumbnail Preview */
+        .logo-thumb {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            object-fit: contain;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            display: none;
+            flex-shrink: 0;
+        }
 
         /* ─── Colour Picker Popup ─────────────────────────────────── */
         .cp-popup {
@@ -1272,6 +1284,26 @@
                                 <span class="preset-sq" style="background: #f0fdf4;"></span>
                                 <span class="preset-sq" style="background: #14532d;"></span>
                             </button>
+                            <!-- Ocean -->
+                            <button type="button" class="preset-btn" data-fg="#0369a1" data-bg="#e0f2fe" title="Ocean">
+                                <span class="preset-sq" style="background: #e0f2fe;"></span>
+                                <span class="preset-sq" style="background: #0369a1;"></span>
+                            </button>
+                            <!-- Sunset -->
+                            <button type="button" class="preset-btn" data-fg="#4c1d95" data-bg="#ffedd5" title="Sunset">
+                                <span class="preset-sq" style="background: #ffedd5;"></span>
+                                <span class="preset-sq" style="background: #4c1d95;"></span>
+                            </button>
+                            <!-- Crimson -->
+                            <button type="button" class="preset-btn" data-fg="#9f1239" data-bg="#ffe4e6" title="Crimson">
+                                <span class="preset-sq" style="background: #ffe4e6;"></span>
+                                <span class="preset-sq" style="background: #9f1239;"></span>
+                            </button>
+                            <!-- Monochrome -->
+                            <button type="button" class="preset-btn" data-fg="#333333" data-bg="#f5f5f5" title="Monochrome">
+                                <span class="preset-sq" style="background: #f5f5f5;"></span>
+                                <span class="preset-sq" style="background: #333333;"></span>
+                            </button>
                         </div>
                     </div>
 
@@ -1298,9 +1330,13 @@
                         <label class="field-label">Logo Overlay (Optional)</label>
                         <div class="logo-upload-wrapper">
                             <input type="file" id="logo-input" class="logo-input" accept="image/png, image/jpeg, image/svg+xml">
+                            
+                            <!-- NEW: Live Logo Preview Thumbnail -->
+                            <img id="logo-preview" class="logo-thumb" alt="Logo preview">
+                            
                             <label for="logo-input" class="logo-label" id="logo-label">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                                Upload or Paste Logo
+                                Upload or Paste
                             </label>
                             <button type="button" id="logo-clear" class="logo-clear">Remove</button>
                         </div>
@@ -1964,6 +2000,7 @@
     // --- Logo Upload, Paste & Constraints ---
     const logoInput = $('logo-input');
     const logoClear = $('logo-clear');
+    const logoPreview = $('logo-preview');
     const logoSizeContainer = $('logo-size-container');
     const logoSizeSlider = $('logo-size-slider');
     const logoSizeValue = $('logo-size-value');
@@ -2041,8 +2078,13 @@
                 logoImage.onload = () => {
                     logoSizeContainer.style.display = 'block';
                     logoClear.style.display = 'block';
+                    
+                    // Update thumbnail preview
+                    logoPreview.src = logoDataUrl;
+                    logoPreview.style.display = 'block';
+
                     const fileName = file.name || fallbackName;
-                    $('logo-label').innerHTML = `✓ Logo Loaded (${fileName.slice(0, 10)}...)`;
+                    $('logo-label').innerHTML = `✓ Loaded`;
                     updateLogoLimit();
                 };
                 // For canvas drawing, we can just use the rasterized PNG
@@ -2087,9 +2129,14 @@
         logoInput.value = '';
         logoClear.style.display = 'none';
         logoSizeContainer.style.display = 'none';
+        
+        // Hide thumbnail preview
+        logoPreview.style.display = 'none';
+        logoPreview.src = '';
+
         $('logo-label').innerHTML = `
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-            Upload or Paste Logo
+            Upload or Paste
         `;
         if (lastMatrix) drawQR(lastMatrix, lastSize);
     });
@@ -2249,7 +2296,7 @@
         }, 'image/png');
     });
 
-    // Share website
+    // Share website (Navbar)
     async function shareWebsite() {
         try {
             if (navigator.share) {
@@ -2269,8 +2316,43 @@
         }
     }
 
+    // Share QR Image (Output Panel)
+    async function shareQRImage() {
+        if (!lastMatrix) return;
+        
+        $('qr-canvas').toBlob(async blob => {
+            if (!blob) return;
+            const file = new File([blob], 'qrcode.png', { type: 'image/png' });
+
+            // Check if the browser supports sharing files
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'QR Code',
+                        text: 'Generated with QR Studio'
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        console.error('Share failed:', err);
+                        showToast('Failed to share image.', true);
+                    }
+                }
+            } else {
+                // Fallback to copying the image to clipboard
+                try {
+                    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                    showToast('Image sharing not supported. Image copied to clipboard instead!');
+                } catch (err) {
+                    showToast('Image sharing and clipboard copying not supported.', true);
+                }
+            }
+        }, 'image/png');
+    }
+
+    // Bind events
     $('nav-share-btn').addEventListener('click', shareWebsite);
-    $('share-btn').addEventListener('click', shareWebsite);
+    $('share-btn').addEventListener('click', shareQRImage);
     </script>
 </body>
 </html>
