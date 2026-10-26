@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="7" fill="#09090b"/>
+  <rect x="1" y="1" width="30" height="30" rx="6" fill="none" stroke="#3b82f6" stroke-opacity="0.5"/>
+  <!-- QR motif: two finder squares + data modules, blue on dark -->
+  <g fill="#3b82f6">
+    <path d="M6 6h6v6H6zM8 8v2h2V8z" fill-rule="evenodd"/>
+    <path d="M20 6h6v6h-6zM22 8v2h2V8z" fill-rule="evenodd"/>
+    <path d="M6 20h6v6H6zM8 22v2h2v-2z" fill-rule="evenodd"/>
+    <!-- data modules -->
+    <rect x="20" y="20" width="3" height="3" rx="0.5"/>
+    <rect x="24" y="24" width="3" height="3" rx="0.5"/>
+    <rect x="13" y="13" width="3" height="3" rx="0.5"/>
+    <rect x="17" y="13" width="3" height="3" rx="0.5"/>
+    <rect x="13" y="17" width="3" height="3" rx="0.5"/>
+  </g>
+</svg>

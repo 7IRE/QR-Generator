@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free QR Code Generator - Private, Fast &amp; Open Source | QR Studio</title>
+    <title>QR Studio</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
     <meta name="description"
         content="Free QR code generator. Custom colors, logo overlay, PNG &amp; SVG download. Nothing is uploaded — QR Studio runs fully in your browser.">
     <link rel="canonical" href="https://qr-studio-wasm.vercel.app/">
@@ -46,7 +48,7 @@
             --border-focus: #52525b;
             --text-primary: #fafafa;
             --text-secondary: #a1a1aa;
-            --text-tertiary: #71717a;
+            --text-tertiary: #9a9aa4;
             --accent: #3b82f6;
             --accent-dim: rgba(59, 130, 246, 0.12);
             --success: #22c55e;
@@ -67,11 +69,11 @@
             --border-focus: #a1a1aa;
             --text-primary: #09090b;
             --text-secondary: #52525b;
-            --text-tertiary: #71717a;
+            --text-tertiary: #5b5b64;
             --accent: #2563eb;
             --accent-dim: rgba(37, 99, 235, 0.09);
-            --success: #16a34a;
-            --success-dim: rgba(22, 163, 74, 0.09);
+            --success: #15803d;
+            --success-dim: rgba(21, 128, 61, 0.09);
             --danger: #dc2626;
             --danger-dim: rgba(220, 38, 38, 0.09);
             --chip-bg: #e4e4e7;
@@ -659,12 +661,8 @@
         .cp-title {
             font-size: 0.78rem;
             font-weight: 600;
-            color: #888;
+            color: var(--text-tertiary);
             letter-spacing: 0.03em;
-        }
-
-        [data-theme="light"] .cp-title {
-            color: #71717a;
         }
 
         .cp-main {
@@ -750,8 +748,8 @@
         }
 
         .cp-action.confirm:hover {
-            background: #16a34a;
-            border-color: #16a34a;
+            background: #15803d;
+            border-color: #15803d;
             color: #fff;
         }
 
@@ -794,13 +792,9 @@
 
         .cp-ch-label {
             font-size: 0.72rem;
-            color: #666;
+            color: var(--text-tertiary);
             text-align: center;
             font-weight: 600;
-        }
-
-        [data-theme="light"] .cp-ch-label {
-            color: #71717a;
         }
 
         .cp-ch {
@@ -963,8 +957,7 @@
             margin-left: auto;
             font-size: 0.7rem;
             font-weight: 500;
-            color: inherit;
-            opacity: 0.5;
+            color: var(--text-tertiary);
         }
 
         .kbd {
@@ -1293,6 +1286,15 @@
             line-height: 1.5;
         }
 
+        h2.section-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
+        }
+
         .step-divider {
             display: flex;
             align-items: center;
@@ -1366,7 +1368,9 @@
 
         .footer a {
             color: var(--text-secondary);
-            text-decoration: none;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            text-decoration-thickness: 1px;
         }
 
         .footer a:hover {
@@ -1374,14 +1378,7 @@
         }
 
         .footer-sep {
-            color: var(--border-focus);
-        }
-
-        .footer-metrics {
-            font-family: ui-monospace, "SF Mono", Menlo, monospace;
-            font-size: 0.72rem;
             color: var(--text-tertiary);
-            letter-spacing: 0.01em;
         }
 
         /* ─── Responsive Media Queries ────────────────────────────── */
@@ -1961,7 +1958,7 @@
 
         <!-- ── How it works ───────────────────────────────────── -->
         <div class="how-it-works">
-            <p class="section-label">How it works</p>
+            <h2 class="section-label">How it works</h2>
             <div class="steps-row" role="list">
                 <div class="step" role="listitem">
                     <span class="step-number">1</span>
@@ -1996,7 +1993,7 @@
 
         <!-- ── Features ───────────────────────────────────────── -->
         <div class="features">
-            <p class="section-label">Features</p>
+            <h2 class="section-label">Features</h2>
             <div class="features-grid" role="list">
                 <div class="feature-card" role="listitem">
                     <div class="feature-icon" aria-hidden="true">
@@ -2034,7 +2031,7 @@
 
         <!-- ── FAQ ───────────────────────────────────────────────── -->
         <div class="faq">
-            <p class="section-label">FAQ</p>
+            <h2 class="section-label">FAQ</h2>
             <div class="faq-list">
                 <details class="faq-item">
                     <summary>Is QR Studio free to use?</summary>
@@ -2107,8 +2104,6 @@
                     (7IRE)</a>. All rights reserved. &mdash; QR Studio</span>
             <span class="footer-sep">&middot;</span>
             <a href="https://github.com/7IRE/QR-Generator" target="_blank" rel="noopener">View source</a>
-            <span class="footer-sep">&middot;</span>
-            <span id="footer-metrics" class="footer-metrics" aria-live="polite">Submissions: &mdash;</span>
         </div>
     </footer>
 
@@ -2895,25 +2890,6 @@
                 $('stat-perf').textContent = `⚡ ${perf.totalMs} ms (wasm ${perf.wasmMs})`;
             }
         }
-
-        // Vercel metrics: fetch live counters once on load and display in the footer
-        async function refreshVercelMetrics() {
-            try {
-                const res = await fetch('/api/metrics', { cache: 'no-store' });
-                if (!res.ok) return;
-                const data = await res.json();
-                const el = document.getElementById('footer-metrics');
-                if (!el) return;
-                if (!data.configured) {
-                    el.textContent = 'Submissions: tracking not configured · Response: —';
-                    return;
-                }
-                const total = data.total != null ? data.total.toLocaleString() : '—';
-                const today = data.today != null ? data.today.toLocaleString() : '—';
-                el.textContent = `Submissions today: ${today} · Total: ${total}`;
-            } catch { /* metrics are best-effort; never break the page */ }
-        }
-        window.addEventListener('load', refreshVercelMetrics);
 
         // SVG builder
         function buildSVG(matrix, size) {

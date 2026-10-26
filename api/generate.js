@@ -1,6 +1,5 @@
 // api/generate.js
 import createQRModule from '../src/qr_module.js';
-import { countSubmission } from '../lib/vercel-kv.js';
 
 // Initialize Wasm module outside the handler so it stays warm
 const modulePromise = createQRModule();
@@ -14,9 +13,6 @@ export default async function handler(req, res) {
   if (typeof text !== 'string' || typeof correctionLevel !== 'number') {
     return res.status(400).json({ error: 'Body must be { text: string, correctionLevel: 0-3 }' });
   }
-
-  // Count every attempt (submission) regardless of outcome — fire-and-forget
-  countSubmission().catch(() => {});
 
   const t0 = Date.now();
   try {
