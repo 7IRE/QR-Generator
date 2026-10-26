@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="630" viewBox="0 0 1200 630" font-family="Segoe UI, -apple-system, Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.30"/>
+      <stop offset="55%" stop-color="#3b82f6" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="glowClip"><rect x="0" y="0" width="640" height="630"/></clipPath>
+  </defs>
+
+  <!-- background -->
+  <rect width="1200" height="630" fill="#09090b"/>
+  <rect width="640" height="630" fill="url(#glow)" clip-path="url(#glowClip)"/>
+
+  <!-- badge -->
+  <g>
+    <rect x="80" y="150" width="356" height="46" rx="23" fill="rgba(59,130,246,0.15)" stroke="rgba(59,130,246,0.4)"/>
+    <text x="258" y="180" text-anchor="middle" font-size="17" font-weight="600" letter-spacing="2.5" fill="#93c5fd">PRIVATE · FAST · OPEN SOURCE</text>
+  </g>
+
+  <!-- title -->
+  <text x="80" y="300" font-size="84" font-weight="700" fill="#fafafa" letter-spacing="-1">QR Studio</text>
+
+  <!-- subtitle -->
+  <text x="80" y="352" font-size="24" fill="#a1a1aa">Free QR code generator with custom colors, logo overlay, and</text>
+  <text x="80" y="384" font-size="24" fill="#a1a1aa">PNG / SVG download. Nothing is ever uploaded.</text>
+
+  <!-- url -->
+  <text x="80" y="452" font-size="17" fill="#71717a" font-family="Consolas, monospace">qr-studio-wasm.vercel.app</text>
+
+  <!-- your real qrcode.svg, scaled to ~230px -->
+  <image xlink:href="qrcode.svg" href="qrcode.svg" x="900" y="200" width="230" height="230" preserveAspectRatio="xMidYMid meet"/>
+</svg>

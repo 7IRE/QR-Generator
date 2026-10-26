@@ -3,6 +3,9 @@
   "functions": {
     "api/generate.js": {
       "includeFiles": "src/qr_module.*"
+    },
+    "api/metrics.js": {
+      "maxDuration": 10
     }
   }
 }

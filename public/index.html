@@ -3,7 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Studio | Secure C++ WebAssembly</title>
+    <title>Free QR Code Generator - Private, Fast &amp; Open Source | QR Studio</title>
+    <meta name="description" content="Free QR code generator. Custom colors, logo overlay, PNG &amp; SVG download. Nothing is uploaded — QR Studio runs fully in your browser.">
+    <link rel="canonical" href="https://qr-studio-wasm.vercel.app/">
+    <meta name="google-site-verification" content="REPLACE_ME">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Free QR Code Generator - Private, Fast &amp; Open Source | QR Studio">
+    <meta property="og:description" content="Generate custom QR codes with logo overlay, custom colors, and PNG/SVG download. Nothing is ever uploaded.">
+    <meta property="og:url" content="https://qr-studio-wasm.vercel.app/">
+    <meta property="og:image" content="https://qr-studio-wasm.vercel.app/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free QR Code Generator | QR Studio">
+    <meta name="twitter:description" content="Custom colors, logo overlay, PNG/SVG download. 100% private, open source.">
+    <meta name="twitter:image" content="https://qr-studio-wasm.vercel.app/og-image.png">
+    <!-- SVG variant for platforms/crawlers that support vector og-images -->
+    <meta property="og:image:svg" content="https://qr-studio-wasm.vercel.app/og-image.svg">
+    <meta name="twitter:image:svg" content="https://qr-studio-wasm.vercel.app/og-image.svg">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "QR Studio",
+      "url": "https://qr-studio-wasm.vercel.app/",
+      "description": "Free QR code generator with custom colors, logo overlay, and PNG/SVG download. Powered by C++ &amp; WebAssembly. Nothing is ever uploaded.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Web Browser",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Rudransh Singh", "url": "https://github.com/7IRE" }
+    }
+    </script>
     <style>
         /* ─── Design tokens ───────────────────────────────────────── */
         :root {
@@ -997,6 +1028,65 @@
 
         .how-it-works { margin-top: 40px; }
         .features { margin-top: 40px; }
+        .faq { margin-top: 40px; }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .faq-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 0;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+
+        .faq-item[open] {
+            border-color: var(--border-focus);
+        }
+
+        .faq-item summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 16px 20px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            user-select: none;
+        }
+
+        .faq-item summary::-webkit-details-marker { display: none; }
+
+        .faq-item summary::after {
+            content: "+";
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-tertiary);
+            flex-shrink: 0;
+            transition: transform 0.15s;
+        }
+
+        .faq-item[open] summary::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-item summary:hover { color: var(--accent); }
+
+        .faq-item p {
+            padding: 0 20px 16px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            max-width: 720px;
+        }
 
         .steps-row {
             display: grid;
@@ -1098,6 +1188,12 @@
         .footer a { color: var(--text-secondary); text-decoration: none; }
         .footer a:hover { color: var(--text-primary); }
         .footer-sep { color: var(--border-focus); }
+        .footer-metrics {
+            font-family: ui-monospace, "SF Mono", Menlo, monospace;
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
+            letter-spacing: 0.01em;
+        }
 
         /* ─── Responsive Media Queries ────────────────────────────── */
         @media (max-width: 1100px) {
@@ -1120,6 +1216,8 @@
             .step:last-child { border-bottom: none; }
             
             .features-grid { grid-template-columns: 1fr; }
+            .faq-item summary { padding: 14px 16px; }
+            .faq-item p { padding: 0 16px 14px; }
         }
 
         @media (max-width: 600px) {
@@ -1230,7 +1328,7 @@
     <main class="main-content">
 
         <div class="page-hero">
-            <h1>Generate QR Codes — Securely</h1>
+            <h1>Free QR Code Generator</h1>
             <div class="hero-sub">
                     <span>Fast, private, and open source — QR versions 1–40.</span>
                     <span class="tech-badge">
@@ -1487,6 +1585,7 @@
                             <span class="stat-chip" id="stat-modules">— modules</span>
                             <span class="stat-chip" id="stat-ecc">— ECC</span>
                             <span class="stat-chip" id="stat-capacity">— bytes used</span>
+                            <span class="stat-chip" id="stat-perf" title="Last generation time (server)">⚡ —</span>
                         </div>
                     </div>
                 </div>
@@ -1560,13 +1659,76 @@
             </div>
         </div>
 
+        <!-- ── FAQ ───────────────────────────────────────────────── -->
+        <div class="faq">
+            <p class="section-label">FAQ</p>
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary>Is QR Studio free to use?</summary>
+                    <p>Yes — completely free, with no account, no limits, and no watermark. The source code and Wasm build pipeline are open source on GitHub.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Is my data stored or uploaded anywhere?</summary>
+                    <p>No. QR codes are generated entirely in your browser via WebAssembly. Nothing is logged, stored, or sent to a server or any third party.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Can I add a logo to my QR code?</summary>
+                    <p>Yes. Use the logo overlay option to place an image in the centre. Pick a higher error-correction level (Quartile or High) so the code still scans reliably with a logo on it.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>What is error correction?</summary>
+                    <p>Redundant data that lets a QR code keep working when part of it is damaged, obscured, or dirty. Levels range from Low (7%) for clean digital screens to High (30%) for print and branded codes with logos.</p>
+                </details>
+                <details class="faq-item">
+                    <summary>Which formats can I download?</summary>
+                    <p>PNG for everyday use and SVG for crisp, scalable graphics. You can also copy the code to your clipboard or share a link.</p>
+                </details>
+            </div>
+        </div>
+
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is QR Studio free to use?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes — completely free, with no account, no limits, and no watermark. The source code and Wasm build pipeline are open source on GitHub." }
+            },
+            {
+              "@type": "Question",
+              "name": "Is my data stored or uploaded anywhere?",
+              "acceptedAnswer": { "@type": "Answer", "text": "No. QR codes are generated entirely in your browser via WebAssembly. Nothing is logged, stored, or sent to a server or any third party." }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I add a logo to my QR code?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes. Use the logo overlay option to place an image in the centre. Pick a higher error-correction level (Quartile or High) so the code still scans reliably with a logo on it." }
+            },
+            {
+              "@type": "Question",
+              "name": "What is error correction?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Redundant data that lets a QR code keep working when part of it is damaged, obscured, or dirty. Levels range from Low (7%) for clean digital screens to High (30%) for print and branded codes with logos." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which formats can I download?",
+              "acceptedAnswer": { "@type": "Answer", "text": "PNG for everyday use and SVG for crisp, scalable graphics. You can also copy the code to your clipboard or share a link." }
+            }
+          ]
+        }
+        </script>
+
     </main>
 
     <footer class="footer">
         <div class="footer-container">
-            <span>&copy; 2025 <a href="https://github.com/7IRE" target="_blank" rel="noopener">7IRE</a>. All rights reserved. &mdash; QR Studio</span>
+            <span>&copy; 2025 <a href="https://github.com/7IRE" target="_blank" rel="noopener">Rudransh Singh (7IRE)</a>. All rights reserved. &mdash; QR Studio</span>
             <span class="footer-sep">&middot;</span>
             <a href="https://github.com/7IRE/QR-Generator" target="_blank" rel="noopener">View source</a>
+            <span class="footer-sep">&middot;</span>
+            <span id="footer-metrics" class="footer-metrics" aria-live="polite">Submissions: &mdash;</span>
         </div>
     </footer>
 
@@ -2277,13 +2439,13 @@
                 throw new Error(`Server error (${res.status}): ${errText.slice(0, 80)}`);
             }
 
-            const { size, matrix } = await res.json();
+            const { size, matrix, perf } = await res.json();
             if (!matrix || !size) throw new Error('Invalid matrix from server.');
-            
+
             lastMatrix = matrix; lastSize = size; lastECC = correctionLevel;
             lastTextBytes = byteLengthOf(text);
             drawQR(matrix, size);
-            updateStats(size, correctionLevel);
+            updateStats(size, correctionLevel, perf);
             
             // Success state
             $('skeleton-box').style.display = 'none';
@@ -2339,14 +2501,36 @@
 
     // Stats
     const eccLabels = ['Low', 'Medium', 'Quartile', 'High'];
-    function updateStats(size, eccLevel) {
+    function updateStats(size, eccLevel, perf) {
         const version = (size - 17) / 4;
         const cap = ECC_CAPACITY_BYTES[eccLevel][version - 1];
         $('stat-version').textContent  = `Version ${version}`;
         $('stat-modules').textContent  = `${size}×${size} modules`;
         $('stat-ecc').textContent      = `${eccLabels[eccLevel]} ECC`;
         $('stat-capacity').textContent = `${lastTextBytes.toLocaleString()} / ${cap.toLocaleString()} bytes`;
+        if (perf && typeof perf.totalMs === 'number') {
+            $('stat-perf').textContent = `⚡ ${perf.totalMs} ms (wasm ${perf.wasmMs})`;
+        }
     }
+
+    // Vercel metrics: fetch live counters once on load and display in the footer
+    async function refreshVercelMetrics() {
+        try {
+            const res = await fetch('/api/metrics', { cache: 'no-store' });
+            if (!res.ok) return;
+            const data = await res.json();
+            const el = document.getElementById('footer-metrics');
+            if (!el) return;
+            if (!data.configured) {
+                el.textContent = 'Submissions: tracking not configured · Response: —';
+                return;
+            }
+            const total = data.total != null ? data.total.toLocaleString() : '—';
+            const today = data.today != null ? data.today.toLocaleString() : '—';
+            el.textContent = `Submissions today: ${today} · Total: ${total}`;
+        } catch { /* metrics are best-effort; never break the page */ }
+    }
+    window.addEventListener('load', refreshVercelMetrics);
 
     // SVG builder
     function buildSVG(matrix, size) {

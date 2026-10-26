@@ -1,5 +1,6 @@
 // api/generate.js
 import createQRModule from '../src/qr_module.js';
+import { countSubmission } from '../lib/vercel-kv.js';
 
 // Initialize Wasm module outside the handler so it stays warm
 const modulePromise = createQRModule();
@@ -14,10 +15,16 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Body must be { text: string, correctionLevel: 0-3 }' });
   }
 
+  // Count every attempt (submission) regardless of outcome — fire-and-forget
+  countSubmission().catch(() => {});
+
+  const t0 = Date.now();
   try {
     const Module = await modulePromise;
+    const wasmStart = performance.now();
     const result = Module.generate(text, correctionLevel);
-    
+    const wasmMs = Math.round(performance.now() - wasmStart);
+
     // Convert from Wasm vector to JS array
     const size = result.size;
     const flat = [];
@@ -32,7 +39,18 @@ export default async function handler(req, res) {
       matrix.push(flat.slice(r * size, (r + 1) * size));
     }
 
-    res.status(200).json({ size, matrix });
+    res.status(200).json({
+      size,
+      matrix,
+      perf: {
+        totalMs: Date.now() - t0,
+        wasmMs,
+        textBytes: new TextEncoder().encode(text).length,
+        version: (size - 17) / 4,
+        ecc: correctionLevel,
+        at: new Date().toISOString(),
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to generate QR' });
