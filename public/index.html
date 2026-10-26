@@ -276,6 +276,7 @@
         }
 
         input[type="text"],
+        textarea,
         select {
             width: 100%;
             padding: 9px 12px;
@@ -289,17 +290,51 @@
             -webkit-appearance: none;
         }
 
-        .input-wrapper input[type="text"] {
+        textarea {
+            font-family: inherit;
+            line-height: 1.45;
+            resize: vertical;
+            min-height: 44px;
+            max-height: 240px;
+        }
+
+        .input-wrapper textarea {
             padding-right: 32px;
         }
 
         input[type="text"]:focus,
+        textarea:focus,
         select:focus {
             border-color: var(--border-focus);
             box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
         }
 
-        input[type="text"]::placeholder { color: var(--text-tertiary); }
+        input[type="text"]::placeholder,
+        textarea::placeholder { color: var(--text-tertiary); }
+
+        /* Live capacity / version status line */
+        .capacity-line {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 0.78rem;
+            line-height: 1.4;
+            border: 1px solid transparent;
+        }
+        .capacity-line.ok {
+            color: var(--success);
+            background: var(--success-dim);
+            border-color: rgba(34,197,94,0.22);
+        }
+        .capacity-line.warn {
+            color: var(--danger);
+            background: var(--danger-dim);
+            border-color: rgba(239,68,68,0.25);
+        }
+        .capacity-line svg { flex-shrink: 0; }
 
         /* Clear Button */
         .clear-btn {
@@ -1102,7 +1137,7 @@
             .tech-badge { font-size: 0.72rem; padding: 3px 8px; }
             .panel { padding: 18px 14px; border-radius: var(--radius-md); }
             .panel-header { margin-bottom: 16px; padding-bottom: 12px; }
-            input[type="text"], select { font-size: 16px; padding: 10px 12px; }
+            input[type="text"], textarea, select { font-size: 16px; padding: 10px 12px; }
             .btn-primary { padding: 11px 16px; font-size: 0.95rem; min-height: 44px; }
             .btn-secondary { padding: 9px 12px; font-size: 0.82rem; min-height: 40px; }
             .color-row { gap: 24px; }
@@ -1197,8 +1232,8 @@
         <div class="page-hero">
             <h1>Generate QR Codes — Securely</h1>
             <div class="hero-sub">
-                <span>Fast, private, and open source.</span>
-                <span class="tech-badge">
+                    <span>Fast, private, and open source — QR versions 1–40.</span>
+                    <span class="tech-badge">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
                     Powered by C++ &amp; WebAssembly
                 </span>
@@ -1224,24 +1259,27 @@
                     <div>
                         <label class="field-label" for="text-input">Content</label>
                         <div class="input-wrapper">
-                            <input type="text" id="text-input" placeholder="Enter text, URL, email address…" autocomplete="off" maxlength="1000" required>
+                            <textarea id="text-input" rows="3" placeholder="Enter text, URL, email address…" autocomplete="off" maxlength="2953" required></textarea>
                             <button type="button" id="clear-btn" class="clear-btn" aria-label="Clear text">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             </button>
                         </div>
-                        <div style="display:flex; justify-content:space-between;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span class="field-hint">UTF-8 text</span>
-                            <span class="field-hint" id="char-counter">0 / 1000</span>
+                            <span class="field-hint" id="char-counter">0 / 2953</span>
+                        </div>
+                        <div class="capacity-line" id="capacity-line" hidden>
+                            <span id="capacity-text"></span>
                         </div>
                     </div>
 
                     <div>
                         <label class="field-label" for="correction-level">Error Correction</label>
                         <select id="correction-level">
-                            <option value="0">Low — 7% data recovery</option>
-                            <option value="1" selected>Medium — 15% data recovery</option>
-                            <option value="2">Quartile — 25% data recovery</option>
-                            <option value="3">High — 30% data recovery</option>
+                            <option value="0">Low — 7% data recovery · up to 2,953 B</option>
+                            <option value="1" selected>Medium — 15% data recovery · up to 2,331 B</option>
+                            <option value="2">Quartile — 25% data recovery · up to 1,663 B</option>
+                            <option value="3">High — 30% data recovery · up to 1,273 B</option>
                         </select>
                         <details class="ecc-info">
                             <summary>
@@ -1448,6 +1486,7 @@
                             <span class="stat-chip" id="stat-version">Version —</span>
                             <span class="stat-chip" id="stat-modules">— modules</span>
                             <span class="stat-chip" id="stat-ecc">— ECC</span>
+                            <span class="stat-chip" id="stat-capacity">— bytes used</span>
                         </div>
                     </div>
                 </div>
@@ -1472,7 +1511,7 @@
                 <div class="step" role="listitem">
                     <span class="step-number">2</span>
                     <h3>C++ compiles it</h3>
-                    <p>Your input is processed by a native C++ algorithm compiled to WebAssembly — no third-party QR libraries.</p>
+                    <p>Your input is processed by a native C++ algorithm compiled to WebAssembly — no third-party QR libraries. Supports QR versions 1–40.</p>
                 </div>
                 <div class="step-divider" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1916,6 +1955,7 @@
 
     // State
     let lastMatrix = null, lastSize = 0, lastECC = 1;
+    let lastTextBytes = 0;
     let logoImage = null;
     let logoDataUrl = null;
 
@@ -1940,21 +1980,72 @@
         if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); $('qr-form').requestSubmit(); }
     });
 
-    // Text Input clear & counter
+    // Text Input clear & counter (with byte-capacity validation for v1–v40)
     const textInput = $('text-input');
     const clearBtn = $('clear-btn');
     const charCounter = $('char-counter');
+    const capacityLine = $('capacity-line');
+    const capacityText = $('capacity-text');
+    const eccSelect = $('correction-level'); // hoisted: updateCapacity() can fire before the logo block below
 
-    textInput.addEventListener('input', () => {
-        const len = textInput.value.length;
-        charCounter.textContent = `${len} / 1000`;
-        clearBtn.style.display = len > 0 ? 'flex' : 'none';
-    });
+    // Byte-mode capacity of a single QR version per ECC level, indexed [ecc][version-1] (v1–v40).
+    // Values mirror the limits table in the C++ generator; v40 = 2953/2331/1663/1273.
+    const ECC_CAPACITY_BYTES = {
+        0: [17,32,53,78,106,134,154,192,230,271,321,367,425,458,520,586,644,718,792,858,929,1003,1091,1171,1273,1367,1465,1528,1628,1732,1840,1952,2068,2188,2303,2431,2563,2699,2809,2953],
+        1: [14,26,42,62,84,106,122,152,180,213,251,287,331,362,412,450,504,560,624,666,711,779,857,911,997,1059,1125,1190,1264,1370,1452,1538,1628,1722,1809,1911,1989,2099,2212,2331],
+        2: [11,20,32,46,60,74,86,108,130,151,177,203,241,258,292,322,364,394,442,482,509,565,611,661,715,751,805,868,908,982,1030,1112,1168,1228,1283,1351,1423,1499,1579,1663],
+        3: [7,14,24,34,44,58,64,84,98,119,137,155,177,194,220,250,280,310,338,382,403,439,461,511,535,593,625,658,698,742,790,842,898,958,983,1051,1093,1139,1219,1273]
+    };
+
+    const byteLengthOf = s => new TextEncoder().encode(s).length;
+
+    // Smallest QR version (1–40) whose byte capacity at the given ECC covers n bytes.
+    function versionForBytes(n, ecc) {
+        const caps = ECC_CAPACITY_BYTES[ecc];
+        for (let i = 0; i < caps.length; i++) if (caps[i] >= n) return i + 1;
+        return null;
+    }
+
+    function updateCapacity() {
+        const text = textInput.value;
+        const bytes = byteLengthOf(text);
+        const chars = text.length;
+
+        charCounter.textContent = `${chars} / 2953`;
+        clearBtn.style.display = chars > 0 ? 'flex' : 'none';
+
+        if (chars === 0) { capacityLine.hidden = true; return; }
+
+        // Read the ECC element via the hoisted constant (safe: declared before any event can fire)
+        const ecc = parseInt(eccSelect.value, 10);
+        const capV40 = ECC_CAPACITY_BYTES[ecc][39];
+
+        capacityLine.hidden = false;
+        if (bytes > capV40) {
+            const eccNames = ['Low', 'Medium', 'Quartile', 'High'];
+            // Most-capable level that still fits the content (0 = Low has the most room)
+            const fitsLevel = [0, 1, 2, 3].find(lvl => ECC_CAPACITY_BYTES[lvl][39] >= bytes);
+            capacityLine.className = 'capacity-line warn';
+            if (fitsLevel === undefined) {
+                capacityText.textContent = `${bytes.toLocaleString()} bytes — not encodable at any error correction level (max 2,953 bytes, Low ECC v40).`;
+            } else if (fitsLevel === 0) {
+                const v = versionForBytes(bytes, 0);
+                capacityText.textContent = `${bytes.toLocaleString()} bytes — too large for ${eccNames[ecc]} ECC (max ${capV40.toLocaleString()}). Switch to Low ECC${v ? ` (will use v${v})` : ''}.`;
+            } else {
+                capacityText.textContent = `${bytes.toLocaleString()} bytes — exceeds the ${capV40.toLocaleString()}-byte limit of ${eccNames[ecc]} ECC. Switch to ${eccNames[fitsLevel]} to fit.`;
+            }
+        } else {
+            const v = versionForBytes(bytes, ecc);
+            capacityLine.className = 'capacity-line ok';
+            capacityText.textContent = `${bytes.toLocaleString()} bytes · fits version ${v}${v === 40 ? ' (max)' : ''}`;
+        }
+    }
+
+    textInput.addEventListener('input', updateCapacity);
 
     clearBtn.addEventListener('click', () => {
         textInput.value = '';
-        charCounter.textContent = '0 / 1000';
-        clearBtn.style.display = 'none';
+        updateCapacity();
         textInput.focus();
     });
 
@@ -2004,7 +2095,6 @@
     const logoSizeContainer = $('logo-size-container');
     const logoSizeSlider = $('logo-size-slider');
     const logoSizeValue = $('logo-size-value');
-    const eccSelect = $('correction-level');
     const logoWarning = $('logo-warning');
 
     // Update the max limit when ECC changes
@@ -2031,7 +2121,10 @@
         if (lastMatrix) drawQR(lastMatrix, lastSize);
     }
 
-    eccSelect.addEventListener('change', updateLogoLimit);
+    eccSelect.addEventListener('change', () => {
+        updateLogoLimit();
+        updateCapacity();
+    });
     updateLogoLimit(); // Initialize on load
 
     logoSizeSlider.addEventListener('input', () => {
@@ -2057,8 +2150,8 @@
                 
                 if (w > maxDim || h > maxDim) {
                     const scale = Math.min(maxDim / w, maxDim / h);
-                    w *= scale;
-                    h *= scale;
+                    w = Math.max(1, Math.round(w * scale));
+                    h = Math.max(1, Math.round(h * scale));
                 }
                 
                 canvas.width = w;
@@ -2144,9 +2237,23 @@
     // Generate
     $('qr-form').addEventListener('submit', async e => {
         e.preventDefault();
-        const text = textInput.value.trim();
+        const raw = textInput.value;
+        const text = raw.trim();
         const correctionLevel = parseInt(eccSelect.value, 10);
         if (!text) return;
+
+        // Client-side capacity guard: fail fast with a clear message instead of a server error
+        const bytes = byteLengthOf(text);
+        const cap40 = ECC_CAPACITY_BYTES[correctionLevel][39];
+        if (bytes > cap40) {
+            updateCapacity(); // refresh the inline warning
+            const fitsLevel = [0, 1, 2, 3].find(lvl => ECC_CAPACITY_BYTES[lvl][39] >= bytes);
+            const eccNames = ['Low', 'Medium', 'Quartile', 'High'];
+            showToast(fitsLevel
+                ? `Content (${bytes.toLocaleString()} bytes) is too large for ${eccNames[correctionLevel]} ECC. Switch to ${eccNames[fitsLevel]} to fit.`
+                : 'Content exceeds the maximum encodable size (Low ECC, v40 = 2,953 bytes).', true);
+            return;
+        }
 
         const btn = $('generate-btn');
         btn.disabled = true;
@@ -2174,6 +2281,7 @@
             if (!matrix || !size) throw new Error('Invalid matrix from server.');
             
             lastMatrix = matrix; lastSize = size; lastECC = correctionLevel;
+            lastTextBytes = byteLengthOf(text);
             drawQR(matrix, size);
             updateStats(size, correctionLevel);
             
@@ -2232,9 +2340,12 @@
     // Stats
     const eccLabels = ['Low', 'Medium', 'Quartile', 'High'];
     function updateStats(size, eccLevel) {
-        $('stat-version').textContent = `Version ${(size - 17) / 4}`;
-        $('stat-modules').textContent = `${size}×${size} modules`;
-        $('stat-ecc').textContent     = `${eccLabels[eccLevel]} ECC`;
+        const version = (size - 17) / 4;
+        const cap = ECC_CAPACITY_BYTES[eccLevel][version - 1];
+        $('stat-version').textContent  = `Version ${version}`;
+        $('stat-modules').textContent  = `${size}×${size} modules`;
+        $('stat-ecc').textContent      = `${eccLabels[eccLevel]} ECC`;
+        $('stat-capacity').textContent = `${lastTextBytes.toLocaleString()} / ${cap.toLocaleString()} bytes`;
     }
 
     // SVG builder
