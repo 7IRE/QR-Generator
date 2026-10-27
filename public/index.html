@@ -11,6 +11,8 @@
         content="Free QR code generator. Custom colors, logo overlay, PNG &amp; SVG download. Nothing is uploaded — QR Studio runs fully in your browser.">
     <link rel="canonical" href="https://qr-studio-wasm.vercel.app/">
     <meta name="google-site-verification" content="UXZFTa0NyrbyCcUJXaC75lDVm1WdlHbMrnSW2JOcUfQ" />
+    <!-- Vercel Web Analytics (auto-served by Vercel; no package install needed for static sites) -->
+    <script defer src="/_vercel/analytics/script.js"></script>
     <meta property="og:type" content="website">
     <meta property="og:title" content="Free QR Code Generator - Private, Fast &amp; Open Source | QR Studio">
     <meta property="og:description"
@@ -490,6 +492,48 @@
         .preset-sq {
             width: 50%;
             height: 100%;
+        }
+
+        /* ─── Style options ───────────────────────────────────────── */
+        .style-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .style-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 8px;
+            background: var(--bg-base);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: border-color 0.15s, background 0.15s, color 0.15s;
+        }
+
+        .style-btn svg { color: var(--text-tertiary); }
+
+        .style-btn:hover {
+            border-color: var(--border-focus);
+        }
+
+        .style-btn.is-active {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+            color: var(--text-primary);
+        }
+
+        .style-btn.is-active svg { color: var(--accent); }
+
+        @media (max-width: 900px) {
+            .style-row { grid-template-columns: 1fr; }
         }
 
         /* ─── Colour circle triggers ──────────────────────────────── */
@@ -1842,6 +1886,36 @@
                         </div>
                     </div>
 
+                    <!-- Style options -->
+                    <div class="field-divider">Style</div>
+
+                    <div>
+                        <label class="field-label">Module Shape</label>
+                        <div class="style-row" id="style-row" role="group" aria-label="Module shape">
+                            <button type="button" class="style-btn is-active" data-style="square" title="Square modules (standard)">
+                                <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+                                    <rect x="1" y="1" width="9" height="9" rx="0" fill="currentColor"/>
+                                    <rect x="12" y="1" width="9" height="9" rx="0" fill="currentColor"/>
+                                    <rect x="1" y="12" width="9" height="9" rx="0" fill="currentColor"/>
+                                    <rect x="12" y="12" width="4" height="4" fill="currentColor"/>
+                                    <rect x="17" y="17" width="4" height="4" fill="currentColor"/>
+                                </svg>
+                                <span>Square</span>
+                            </button>
+                            <button type="button" class="style-btn" data-style="rounded" title="Rounded corners (clean, branded look)">
+                                <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+                                    <rect x="1" y="1" width="9" height="9" rx="3" fill="currentColor"/>
+                                    <rect x="12" y="1" width="9" height="9" rx="3" fill="currentColor"/>
+                                    <rect x="1" y="12" width="9" height="9" rx="3" fill="currentColor"/>
+                                    <rect x="12" y="12" width="4" height="4" rx="1.5" fill="currentColor"/>
+                                    <rect x="17" y="17" width="4" height="4" rx="1.5" fill="currentColor"/>
+                                </svg>
+                                <span>Rounded</span>
+                            </button>
+                        </div>
+                        <span class="field-hint" id="style-hint">Square is standard; rounded scans best with Quartile/High ECC.</span>
+                    </div>
+
                     <!-- Scale slider -->
                     <div>
                         <label class="field-label" for="scale-slider">
@@ -2498,6 +2572,7 @@
         let lastTextBytes = 0;
         let logoImage = null;
         let logoDataUrl = null;
+        let qrStyle = 'square'; // 'square' | 'rounded'
 
         // ECC Limits for logo size (% of width)
         const ECC_LIMITS = {
@@ -2628,6 +2703,25 @@
             });
         });
 
+        // Style options (module shape)
+        const styleRow = $('style-row');
+        const styleHint = $('style-hint');
+        document.querySelectorAll('.style-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.style-btn').forEach(b => b.classList.remove('is-active'));
+                btn.classList.add('is-active');
+                qrStyle = btn.dataset.style;
+                if (qrStyle === 'rounded' && lastECC < 2) {
+                    styleHint.textContent = 'Rounded modules reduce scannability — use Quartile or High ECC for best results.';
+                    styleHint.style.color = 'var(--danger)';
+                } else {
+                    styleHint.textContent = 'Square is standard; rounded scans best with Quartile/High ECC.';
+                    styleHint.style.color = '';
+                }
+                if (lastMatrix) drawQR(lastMatrix, lastSize);
+            });
+        });
+
         // --- Logo Upload, Paste & Constraints ---
         const logoInput = $('logo-input');
         const logoClear = $('logo-clear');
@@ -2664,6 +2758,17 @@
         eccSelect.addEventListener('change', () => {
             updateLogoLimit();
             updateCapacity();
+            // Refresh style hint if rounded + low ECC
+            if (qrStyle === 'rounded') {
+                const ecc = parseInt(eccSelect.value, 10);
+                if (ecc < 2) {
+                    styleHint.textContent = 'Rounded modules reduce scannability — use Quartile or High ECC for best results.';
+                    styleHint.style.color = 'var(--danger)';
+                } else {
+                    styleHint.textContent = 'Square is standard; rounded scans best with Quartile/High ECC.';
+                    styleHint.style.color = '';
+                }
+            }
         });
         updateLogoLimit(); // Initialize on load
 
@@ -2853,10 +2958,22 @@
             ctx.fillStyle = bg;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = fg;
+            const rounded = qrStyle === 'rounded';
+            // Corner radius for rounded modules (capped at 40% of cell so adjacent
+            // rounded modules don't visually merge into a blob)
+            const cr = Math.max(1, Math.round(cell * 0.4));
             for (let y = 0; y < size; y++)
                 for (let x = 0; x < size; x++)
-                    if (matrix[y][x] === 1)
-                        ctx.fillRect(padding + x * cell, padding + y * cell, cell, cell);
+                    if (matrix[y][x] === 1) {
+                        const px = padding + x * cell, py = padding + y * cell;
+                        if (rounded && ctx.roundRect) {
+                            ctx.beginPath();
+                            ctx.roundRect(px, py, cell, cell, cr);
+                            ctx.fill();
+                        } else {
+                            ctx.fillRect(px, py, cell, cell);
+                        }
+                    }
 
             // Draw Logo Overlay (strictly sized)
             if (logoImage) {
@@ -2898,10 +3015,14 @@
             const dim = size * cell + padding * 2;
             const fg = fgPicker.getHex(), bg = bgPicker.getHex();
             let rects = '';
+            const rounded = qrStyle === 'rounded';
+            const cr = Math.max(1, Math.round(cell * 0.4));
             for (let y = 0; y < size; y++)
                 for (let x = 0; x < size; x++)
-                    if (matrix[y][x] === 1)
-                        rects += `<rect x="${padding + x * cell}" y="${padding + y * cell}" width="${cell}" height="${cell}" fill="${fg}"/>`;
+                    if (matrix[y][x] === 1) {
+                        const rx = rounded ? ` rx="${cr}"` : '';
+                        rects += `<rect x="${padding + x * cell}" y="${padding + y * cell}" width="${cell}" height="${cell}"${rx} fill="${fg}"/>`;
+                    }
 
             let logoStr = '';
             if (logoImage && logoDataUrl) {
